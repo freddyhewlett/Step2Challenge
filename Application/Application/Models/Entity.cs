@@ -4,13 +4,15 @@ using System.Text;
 
 namespace Domain.Models
 {
-    public class Entity
+    public abstract class Entity
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
+        public DateTime InsertDate { get; private set; }
+        public DateTime? UpdateDate { get; private set; }
 
-        public Entity()
+        protected Entity()
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid();           
         }
     }
 }

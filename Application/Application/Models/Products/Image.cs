@@ -4,15 +4,15 @@ using System.Text;
 
 namespace Domain.Models.Products
 {
-    public class Image
-    {
-        public Guid ImageId { get; set; }
-        public DateTime InsertDate { get; set; }
-        public DateTime UpdateDate { get; set; }
+    public class Image : Entity
+    {        
+        public string ImagePath { get; set; }
 
-        public void SetImagePath(string imagePath)
+        protected Image() { }
+
+        public Image(string path)
         {
-            
+            ImagePath = path;
         }
     }
 }
