@@ -32,11 +32,6 @@ namespace Infrastructure.Repositories
 
         public async Task Remove(Product product)
         {
-            //var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", product.ImagePath);
-            //if (File.Exists(path))
-            //{
-            //    File.Delete(path);
-            //}
             _context.Remove(product);
             await Task.CompletedTask;
         }
@@ -110,14 +105,32 @@ namespace Infrastructure.Repositories
             return path;
         }
 
-        public async Task<int> SaveChanges()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
         public async Task<Product> FindById(Guid id)
         {
             return await _context.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task InsertImage(Image image)
+        {
+            await _context.AddAsync(image);
+        }
+
+        public async Task RemoveImage(Image image)
+        {
+            _context.Remove(image);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateImage(Image image)
+        {
+
+            _context.Update(image);
+            await Task.CompletedTask;
+        }
+
+        public async Task<int> SaveChanges()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }

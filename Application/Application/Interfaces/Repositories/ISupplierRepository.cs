@@ -16,12 +16,19 @@ namespace Domain.Interfaces.Repositories
         Task InsertJuridical(SupplierJuridical supplier);
         Task RemovePhysical(SupplierPhysical supplier);
         Task RemoveJuridical(SupplierJuridical supplier);
+        Task UpdatePhysical(SupplierPhysical supplier);
+        Task UpdateJuridical(SupplierJuridical supplier);
         Task<IEnumerable<SupplierPhysical>> ToListPhysical();
         Task<IEnumerable<SupplierJuridical>> ToListJuridical();
         IQueryable<SupplierPhysical> SearchPhysicalString(string search, Guid? id);
         IQueryable<SupplierJuridical> SearchJuridicalString(string search, Guid? id);
-        Task<int> SaveChanges();
         Task<SupplierPhysical> FindPhysicalById(Guid id);
         Task<SupplierJuridical> FindJuridicalById(Guid id);
+        Task InsertPhone(Phone phone);
+        Task RemovePhone(Phone phone);
+        Task UpdatePhone(Phone phone);
+        Task UpdateAddress(Address address);
+        Task UpdateEmail(Email email);
+        Task<int> SaveChanges();
     }
 }

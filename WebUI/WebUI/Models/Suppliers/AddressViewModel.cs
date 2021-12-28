@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Domain.Models.Suppliers
+namespace WebUI.Models.Suppliers
 {
-    public class Address : Entity
+    public class AddressViewModel
     {
+        public Guid Id { get; private set; }
+        public DateTime InsertDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
         public string ZipCode { get; set; }
         public string Street { get; set; }
         public string Number { get; set; }

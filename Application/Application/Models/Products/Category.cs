@@ -8,9 +8,16 @@ namespace Domain.Models.Products
     {
         
         public bool Active { get; set; }
-        public string Name { get; set; }
-        
+        public string Name { get; set; }       
 
         public IEnumerable<Product> Products { get; set; }
+
+        protected Category() { }
+
+        public Category(string name)
+        {
+            Name = name;
+            Active = true;
+        }
     }
 }

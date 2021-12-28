@@ -6,7 +6,7 @@ using System.Text;
 namespace Domain.Models.Suppliers
 {
     public class Phone : Entity
-    {
+    {        
         public string Ddd { get; set; }
         public string Number { get; set; }
         public PhoneType PhoneType { get; set; }

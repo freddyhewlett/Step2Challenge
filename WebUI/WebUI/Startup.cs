@@ -1,20 +1,20 @@
+using Application.Interfaces;
+using Application.Services;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
+using Domain.Services;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using WebUI.Data;
+using WebUI.Configuration;
 
 namespace WebUI
 {
@@ -35,8 +35,14 @@ namespace WebUI
             services.AddControllersWithViews();
             services.AddMvcCore();
 
-
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<INotifierService, NotifierService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<RegisterDbContext>();
+            services.AddScoped<SeedConfig>();
 
 
             //Authentication
@@ -63,13 +69,13 @@ namespace WebUI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env /*, SeedConfig seed*/)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedConfig seed)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                //seed.Seed();
+                seed.Seed();
             }
             else
             {

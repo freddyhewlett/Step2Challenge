@@ -21,5 +21,8 @@ namespace Domain.Interfaces.Repositories
         Task<string> FindImagePath(Guid id);
         Task<int> SaveChanges();
         Task<Product> FindById(Guid id);
+        Task InsertImage(Image image);
+        Task RemoveImage(Image image);
+        Task UpdateImage(Image image);
     }
 }

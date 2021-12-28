@@ -52,6 +52,20 @@ namespace Infrastructure.Repositories
             await Task.CompletedTask;
         }
 
+        public async Task UpdatePhysical(SupplierPhysical supplier)
+        {
+
+            _context.Update(supplier);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateJuridical(SupplierJuridical supplier)
+        {
+
+            _context.Update(supplier);
+            await Task.CompletedTask;
+        }
+
         public async Task<IEnumerable<SupplierPhysical>> ToListPhysical()
         {
             return await _context.PhysicalSuppliers.ToListAsync();
@@ -84,11 +98,6 @@ namespace Infrastructure.Repositories
             return suppliers;
         }
 
-        public async Task<int> SaveChanges()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
         public async Task<SupplierPhysical> FindPhysicalById(Guid id)
         {
             return await _context.PhysicalSuppliers.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -97,6 +106,40 @@ namespace Infrastructure.Repositories
         public async Task<SupplierJuridical> FindJuridicalById(Guid id)
         {
             return await _context.JuridicalSuppliers.Where(x => x.Id == id).FirstOrDefaultAsync();
+        }        
+
+        public async Task InsertPhone(Phone phone)
+        {
+            await _context.AddAsync(phone);
+        }
+
+        public async Task RemovePhone(Phone phone)
+        {
+            _context.Remove(phone);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdatePhone(Phone phone)
+        {
+            _context.Update(phone);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateAddress(Address address)
+        {
+            _context.Update(address);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateEmail(Email email)
+        {
+            _context.Update(email);
+            await Task.CompletedTask;
+        }
+
+        public async Task<int> SaveChanges()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }
