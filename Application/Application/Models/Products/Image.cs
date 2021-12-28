@@ -6,7 +6,7 @@ namespace Domain.Models.Products
 {
     public class Image : Entity
     {        
-        public string ImagePath { get; set; }
+        public string ImagePath { get; set; }        
 
         protected Image() { }
 

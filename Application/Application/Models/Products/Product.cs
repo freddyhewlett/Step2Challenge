@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.Suppliers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,14 +16,14 @@ namespace Domain.Models.Products
         public bool Active { get; set; }
         public decimal PriceSales { get; set; }
         public decimal PricePurchase { get; set; }
-
-
+        public Supplier Supplier { get; set; }
+        public Guid SupplierId { get; set; }
 
         protected Product() 
         {            
         }
 
-        public Product(Guid idCategory, List<Image> images, string name, string barCode, int qtyStock, bool active, decimal sale, decimal purchase)
+        public Product(Guid idCategory, List<Image> images, Guid idSupplier, string name, string barCode, int qtyStock, bool active, decimal sale, decimal purchase)
         {
             CategoryId = idCategory;
 
@@ -38,6 +39,7 @@ namespace Domain.Models.Products
             Active = active;
             PriceSales = sale;
             PricePurchase = purchase;
+            SupplierId = idSupplier;
         }
 
         public void SetImagePath(string imagePath)

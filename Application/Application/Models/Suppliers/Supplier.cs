@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Domain.Models.Enum;
+using Domain.Models.Products;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,8 +16,8 @@ namespace Domain.Models.Suppliers
         public Guid AddressId { get; set; }
         public Email Email { get; set; }
         public Guid EmailId { get; set; }
-        public ICollection<Phone> Phone { get; set; } = new List<Phone>();
+        public IEnumerable<Product> Products { get; set; }
+        public ICollection<Phone> Phones { get; set; } = new List<Phone>();
 
-        
     }
 }
