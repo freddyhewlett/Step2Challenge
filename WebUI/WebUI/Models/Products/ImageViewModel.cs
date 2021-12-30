@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace WebUI.Models.Products
 {
-    public class ImageViewModel
+    public class ImageViewModel : EntityViewModel
     {
-        public Guid Id { get; private set; }
-        public DateTime InsertDate { get; private set; }
-        public DateTime? UpdateDate { get; private set; }
         public string ImagePath { get; set; }
     }
 }

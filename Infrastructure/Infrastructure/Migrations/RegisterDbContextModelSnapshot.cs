@@ -97,6 +97,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("QuantityStock")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
@@ -104,12 +107,14 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("SupplierId");
+
                     b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.Address", b =>
                 {
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -137,20 +142,20 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ZipCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
                     b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.Email", b =>
                 {
-                    b.Property<Guid>("EmailId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -160,17 +165,17 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("InsertDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("EmailId");
+                    b.HasKey("Id");
 
                     b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.Phone", b =>
                 {
-                    b.Property<Guid>("PhoneId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -183,25 +188,23 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Number")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SupplierJuridicalId")
+                    b.Property<int>("PhoneType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SupplierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("SupplierPhysicalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PhoneId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("SupplierJuridicalId");
-
-                    b.HasIndex("SupplierPhysicalId");
+                    b.HasIndex("SupplierId");
 
                     b.ToTable("Phones");
                 });
 
-            modelBuilder.Entity("Domain.Models.Suppliers.SupplierJuridical", b =>
+            modelBuilder.Entity("Domain.Models.Suppliers.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,6 +215,37 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid>("AddressId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EmailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FantasyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("EmailId");
+
+                    b.ToTable("Supplier");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Supplier");
+                });
+
+            modelBuilder.Entity("Domain.Models.Suppliers.SupplierJuridical", b =>
+                {
+                    b.HasBaseType("Domain.Models.Suppliers.Supplier");
 
                     b.Property<string>("Cnpj")
                         .HasColumnType("nvarchar(max)");
@@ -219,41 +253,15 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CompanyName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("EmailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FantasyName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("InsertDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("OpenDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("EmailId");
-
-                    b.ToTable("JuridicalSuppliers");
+                    b.HasDiscriminator().HasValue("SupplierJuridical");
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.SupplierPhysical", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasBaseType("Domain.Models.Suppliers.Supplier");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -261,28 +269,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Cpf")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("EmailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FantasyName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("InsertDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("EmailId");
-
-                    b.ToTable("PhysicalSuppliers");
+                    b.HasDiscriminator().HasValue("SupplierPhysical");
                 });
 
             modelBuilder.Entity("Domain.Models.Products.Image", b =>
@@ -299,35 +289,22 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Models.Suppliers.Supplier", "Supplier")
+                        .WithMany("Products")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.Phone", b =>
                 {
-                    b.HasOne("Domain.Models.Suppliers.SupplierJuridical", null)
-                        .WithMany("Phone")
-                        .HasForeignKey("SupplierJuridicalId");
-
-                    b.HasOne("Domain.Models.Suppliers.SupplierPhysical", null)
-                        .WithMany("Phone")
-                        .HasForeignKey("SupplierPhysicalId");
+                    b.HasOne("Domain.Models.Suppliers.Supplier", null)
+                        .WithMany("Phones")
+                        .HasForeignKey("SupplierId");
                 });
 
-            modelBuilder.Entity("Domain.Models.Suppliers.SupplierJuridical", b =>
-                {
-                    b.HasOne("Domain.Models.Suppliers.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Suppliers.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Models.Suppliers.SupplierPhysical", b =>
+            modelBuilder.Entity("Domain.Models.Suppliers.Supplier", b =>
                 {
                     b.HasOne("Domain.Models.Suppliers.Address", "Address")
                         .WithMany()

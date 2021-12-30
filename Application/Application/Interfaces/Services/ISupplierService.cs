@@ -1,4 +1,5 @@
-﻿using Domain.Models.Suppliers;
+﻿using Domain.Models.Products;
+using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Domain.Interfaces.Services
     {
         Task<SupplierPhysical> FindPhysicalById(Guid id);
         Task<SupplierJuridical> FindJuridicalById(Guid id);
+        Task<IEnumerable<Product>> ProductListByPhysical(Guid id);
+        Task<IEnumerable<Product>> ProductListByJuridical(Guid id);
         Task<IEnumerable<SupplierPhysical>> PhysicalAll();
         Task<IEnumerable<SupplierJuridical>> JuridicalAll();
         Task InsertPhysical(SupplierPhysical supplier);
@@ -19,12 +22,14 @@ namespace Domain.Interfaces.Services
         Task RemoveJuridical(Guid id);
         Task UpdatePhysical(SupplierPhysical supplier);
         Task UpdateJuridical(SupplierJuridical supplier);
-        IQueryable<SupplierPhysical> SearchPhysical(string search, Guid? selectedGenre);
-        IQueryable<SupplierJuridical> SearchJuridical(string search, Guid? selectedGenre);
+        IQueryable<SupplierPhysical> SearchPhysical(string search);
+        IQueryable<SupplierJuridical> SearchJuridical(string search);
         Task InsertPhone(Phone phone);
         Task RemovePhone(Phone phone);
         Task UpdatePhone(Phone phone);
         Task UpdateAddress(Address address);
         Task UpdateEmail(Email email);
+        Task InsertEmail(Email email);
+        Task InsertAddress(Address adress);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces.Repositories;
+using Domain.Models.Products;
 using Domain.Models.Suppliers;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace Infrastructure.Repositories
 
         public async Task InsertPhysical(SupplierPhysical supplier)
         {
-            await _context.AddAsync(supplier);
+            await _context.PhysicalSuppliers.AddAsync(supplier);
         }
 
         public async Task InsertJuridical(SupplierJuridical supplier)
@@ -42,12 +43,24 @@ namespace Infrastructure.Repositories
 
         public async Task RemovePhysical(SupplierPhysical supplier)
         {
+            var phones = supplier.Phones;
+            var email = supplier.Email;
+            var address = supplier.Address;
+            _context.Remove(phones);
+            _context.Remove(email);
+            _context.Remove(address);
             _context.Remove(supplier);
             await Task.CompletedTask;
         }
 
         public async Task RemoveJuridical(SupplierJuridical supplier)
         {
+            var phones = supplier.Phones;
+            var email = supplier.Email;
+            var address = supplier.Address;
+            _context.Remove(phones);
+            _context.Remove(email);
+            _context.Remove(address);
             _context.Remove(supplier);
             await Task.CompletedTask;
         }
@@ -69,6 +82,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<SupplierPhysical>> ToListPhysical()
         {
             return await _context.PhysicalSuppliers.ToListAsync();
+            //return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
         }
 
         public async Task<IEnumerable<SupplierJuridical>> ToListJuridical()
@@ -76,37 +90,41 @@ namespace Infrastructure.Repositories
             return await _context.JuridicalSuppliers.ToListAsync();
         }
 
-        public IQueryable<SupplierPhysical> SearchPhysicalString(string search, Guid? id)
+        public IQueryable<SupplierPhysical> SearchPhysicalString(string search)
         {
-            var supplierID = id.GetValueOrDefault();
-            var suppliers = _context.PhysicalSuppliers.Where(c => !id.HasValue || c.Id == supplierID);
-            if (!String.IsNullOrEmpty(search))
-            {
-                suppliers = suppliers.Where(s => s.FullName.Contains(search) || s.FantasyName.Contains(search));
-            }
+            var suppliers = _context.PhysicalSuppliers.Where(s => s.FullName.Contains(search) || s.FantasyName.Contains(search));
+            
             return suppliers;
         }
 
-        public IQueryable<SupplierJuridical> SearchJuridicalString(string search, Guid? id)
+        public IQueryable<SupplierJuridical> SearchJuridicalString(string search)
         {
-            var supplierID = id.GetValueOrDefault();
-            var suppliers = _context.JuridicalSuppliers.Where(c => !id.HasValue || c.Id == supplierID);
-            if (!String.IsNullOrEmpty(search))
-            {
-                suppliers = suppliers.Where(s => s.CompanyName.Contains(search) || s.FantasyName.Contains(search));
-            }
+            var suppliers = _context.JuridicalSuppliers.Where(s => s.CompanyName.Contains(search) || s.FantasyName.Contains(search));
+
             return suppliers;
         }
 
         public async Task<SupplierPhysical> FindPhysicalById(Guid id)
         {
-            return await _context.PhysicalSuppliers.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<SupplierJuridical> FindJuridicalById(Guid id)
         {
             return await _context.JuridicalSuppliers.Where(x => x.Id == id).FirstOrDefaultAsync();
-        }        
+        }
+
+        public async Task<IEnumerable<Product>> ProductListByPhysical(Guid id)
+        {
+            var supplier = await FindPhysicalById(id);
+            return supplier.Products;
+        }
+
+        public async Task<IEnumerable<Product>> ProductListByJuridical(Guid id)
+        {
+            var supplier = await FindJuridicalById(id);
+            return supplier.Products;
+        }
 
         public async Task InsertPhone(Phone phone)
         {
@@ -125,10 +143,20 @@ namespace Infrastructure.Repositories
             await Task.CompletedTask;
         }
 
+        public async Task InsertAddress(Address address)
+        {
+            await _context.AddAsync(address);
+        }
+
         public async Task UpdateAddress(Address address)
         {
             _context.Update(address);
             await Task.CompletedTask;
+        }
+
+        public async Task InsertEmail(Email email)
+        {
+            await _context.AddAsync(email);
         }
 
         public async Task UpdateEmail(Email email)

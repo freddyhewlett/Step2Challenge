@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace WebUI.Models.Products
 {
-    public class CategoryViewModel
+    public class CategoryViewModel : EntityViewModel
     {
-        public Guid Id { get; private set; }
-        public DateTime InsertDate { get; private set; }
-        public DateTime? UpdateDate { get; private set; }
         public bool Active { get; set; }
         public string Name { get; set; }
 

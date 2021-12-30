@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Domain.Interfaces.Repositories;
+﻿using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Domain.Models.Products;
 using System;

@@ -1,6 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Interfaces.Repositories;
+﻿using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Domain.Models.Products;
 using Domain.Models.Suppliers;
 using Domain.Tools;
 using System;
@@ -46,6 +46,26 @@ namespace Domain.Services
             return result;
         }
 
+        public async Task<IEnumerable<Product>> ProductListByPhysical(Guid id)
+        {
+            var result = await _supplierRepository.ProductListByPhysical(id);
+            if (result == null)
+            {
+                _notifierService.AddError("Não existem produtos cadastrados para este fornecedor.");
+            }
+            return result;
+        }
+
+        public async Task<IEnumerable<Product>> ProductListByJuridical(Guid id)
+        {
+            var result = await _supplierRepository.ProductListByJuridical(id);
+            if (result == null)
+            {
+                _notifierService.AddError("Não existem produtos cadastrados para este fornecedor.");
+            }
+            return result;
+        }
+
         public async Task<IEnumerable<SupplierPhysical>> PhysicalAll()
         {
             return await _supplierRepository.ToListPhysical();
@@ -63,7 +83,7 @@ namespace Domain.Services
                 _notifierService.AddError("Já existe fornecedor cadastrado com este CPF.");
                 return;
             }
-            if (supplier.BirthDate.Year <= DateTime.Now.Year -18)
+            if (supplier.BirthDate.Date >= DateTime.Now.AddYears(-18).Date)
             {
                 _notifierService.AddError("Cadastro permitido apenas para maiores de 18 anos.");
                 return;
@@ -131,16 +151,16 @@ namespace Domain.Services
             await _supplierRepository.SaveChanges();
         }
 
-        public IQueryable<SupplierPhysical> SearchPhysical(string search, Guid? selectedGenre)
+        public IQueryable<SupplierPhysical> SearchPhysical(string search)
         {
-            var supplier = _supplierRepository.SearchPhysicalString(search, selectedGenre);
+            var supplier = _supplierRepository.SearchPhysicalString(search);
 
             return supplier;
         }
 
-        public IQueryable<SupplierJuridical> SearchJuridical(string search, Guid? selectedGenre)
+        public IQueryable<SupplierJuridical> SearchJuridical(string search)
         {
-            var supplier = _supplierRepository.SearchJuridicalString(search, selectedGenre);
+            var supplier = _supplierRepository.SearchJuridicalString(search);
 
             return supplier;
         }
@@ -163,9 +183,21 @@ namespace Domain.Services
             await _supplierRepository.SaveChanges();
         }
 
+        public async Task InsertAddress(Address address)
+        {
+            await _supplierRepository.InsertAddress(address);
+            await _supplierRepository.SaveChanges();
+        }
+
         public async Task UpdateAddress(Address address)
         {
             await _supplierRepository.UpdateAddress(address);
+            await _supplierRepository.SaveChanges();
+        }
+
+        public async Task InsertEmail(Email email)
+        {
+            await _supplierRepository.InsertEmail(email);
             await _supplierRepository.SaveChanges();
         }
 

@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace WebUI.Models.Suppliers
 {
-    public class AddressViewModel
+    public class AddressViewModel : EntityViewModel
     {
-        public Guid Id { get; private set; }
-        public DateTime InsertDate { get; set; }
-        public DateTime? UpdateDate { get; set; }
         public string ZipCode { get; set; }
         public string Street { get; set; }
         public string Number { get; set; }

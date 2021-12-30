@@ -1,0 +1,10 @@
+﻿@model PhoneViewModel
+
+<div class="phoneNumber">
+    <p>
+        <label>Phone Number</label>
+        @Html.TextBoxFor(x => x.Ddd)
+        @Html.TextBoxFor(x => x.Number)
+        <select asp-for=@Model.PhoneType asp-items="Html.GetEnumSelectList<WebUI.Models.Enum.PhoneType>()"></select>
+    </p>
+</div>

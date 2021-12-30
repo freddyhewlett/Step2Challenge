@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace WebUI.Models.Suppliers
 {
-    public class EmailViewModel
+    public class EmailViewModel : EntityViewModel
     {
-        public Guid Id { get; private set; }
-        public DateTime InsertDate { get; private set; }
-        public DateTime? UpdateDate { get; private set; }
         public string EmailAddress { get; set; }
     }
 }

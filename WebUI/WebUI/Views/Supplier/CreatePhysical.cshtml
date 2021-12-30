@@ -1,0 +1,120 @@
+﻿@model SupplierPhysicalViewModel
+
+@{
+    ViewData["Title"] = "CreatePhysical";
+}
+
+<h1>CreatePhysical</h1>
+
+<h4>SupplierPhysical</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreatePhysical">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cpf" class="control-label"></label>
+                <input asp-for="Cpf" class="form-control" />
+                <span asp-validation-for="Cpf" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label"></label>
+                <input asp-for="BirthDate" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="FantasyName" class="control-label"></label>
+                <input asp-for="FantasyName" class="form-control" />
+                <span asp-validation-for="FantasyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.ZipCode class="control-label"></label>
+                    <input asp-for=@Model.Address.ZipCode class="form-control" />
+                    <span asp-validation-for=@Model.Address.ZipCode class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.Street class="control-label"></label>
+                    <input asp-for=@Model.Address.Street class="form-control" />
+                    <span asp-validation-for=@Model.Address.Street class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.Number class="control-label"></label>
+                    <input asp-for=@Model.Address.Number class="form-control" />
+                    <span asp-validation-for=@Model.Address.Number class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.Complement class="control-label"></label>
+                    <input asp-for=@Model.Address.Complement class="form-control" />
+                    <span asp-validation-for=@Model.Address.Complement class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.Reference class="control-label"></label>
+                    <input asp-for=@Model.Address.Reference class="form-control" />
+                    <span asp-validation-for=@Model.Address.Reference class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.Neighborhood class="control-label"></label>
+                    <input asp-for=@Model.Address.Neighborhood class="form-control" />
+                    <span asp-validation-for=@Model.Address.Neighborhood class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.City class="control-label"></label>
+                    <input asp-for=@Model.Address.City class="form-control" />
+                    <span asp-validation-for=@Model.Address.City class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.Address.State class="control-label"></label>
+                    <input asp-for=@Model.Address.State class="form-control" />
+                    <span asp-validation-for=@Model.Address.State class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group">
+                    <label asp-for=@Model.Email.EmailAddress class="control-label"></label>
+                    <input asp-for=@Model.Email.EmailAddress class="form-control" />
+                    <span asp-validation-for=@Model.Email.EmailAddress class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group">
+                    <label asp-for=@Model.HomePhone class="control-label"></label>
+                    <input asp-for=@Model.HomePhone class="form-control" />
+                    <span asp-validation-for=@Model.HomePhone class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.MobilePhone class="control-label"></label>
+                    <input asp-for=@Model.MobilePhone class="form-control" />
+                    <span asp-validation-for=@Model.MobilePhone class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.OfficePhone class="control-label"></label>
+                    <input asp-for=@Model.OfficePhone class="form-control" />
+                    <span asp-validation-for=@Model.OfficePhone class="text-danger"></span>
+                </div>
+            </div>            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

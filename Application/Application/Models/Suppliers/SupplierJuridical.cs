@@ -32,11 +32,24 @@ namespace Domain.Models.Suppliers
 
             if (Phones.Count >= 3)
             {
-                //TODO retornar erro
+                throw new Exception("Quantidade limite de numeros telefonicos atingido");
             }
 
             Phones.Add(new Phone(ddd, number, type));
 
+        }
+
+        public void CreatePhoneNumbers(int count = 1)
+        {
+            if (count >= 3)
+            {
+                throw new Exception("Quantidade limite de numeros telefonicos atingido");
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                Phones.Add(new Phone());
+            }
         }
     }
 }

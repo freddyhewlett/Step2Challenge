@@ -7,11 +7,8 @@ using WebUI.Models.Suppliers;
 
 namespace WebUI.Models.Products
 {
-    public class ProductViewModel
+    public class ProductViewModel : EntityViewModel
     {
-        public Guid Id { get; private set; }
-        public DateTime InsertDate { get; private set; }
-        public DateTime? UpdateDate { get; private set; }
         public string Name { get; set; }
         public CategoryViewModel Category { get; set; }
         public Guid CategoryId { get; set; }

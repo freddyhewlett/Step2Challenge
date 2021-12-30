@@ -13,7 +13,7 @@ namespace Domain.Models.Suppliers
 
         protected SupplierPhysical() { }
 
-        public SupplierPhysical(Guid emailId, Guid addressId, string fantasyName, DateTime birth, string cpf, string fullName, string ddd, string number, PhoneType type)
+        public SupplierPhysical(Guid emailId, Guid addressId, string fantasyName, DateTime birth, string cpf, string fullName, Phone phone)
         {
             EmailId = emailId;
             AddressId = addressId;
@@ -22,19 +22,32 @@ namespace Domain.Models.Suppliers
             Cpf = cpf;
             FullName = fullName;
 
-            SetPhone(ddd, number, type);
+            SetPhone(phone);
         }
 
-        public void SetPhone(string ddd, string number, PhoneType type)
+        public void SetPhone(Phone phone)
         {
 
             if (Phones.Count >= 3)
             {
-                //TODO retornar erro
+                throw new Exception("Quantidade limite de numeros telefonicos atingido");
             }
 
-            Phones.Add(new Phone(ddd, number, type));
+            Phones.Add(phone);
 
+        }
+
+        public void CreatePhoneNumbers(int count = 1)
+        {
+            if (count >= 3)
+            {
+                throw new Exception("Quantidade limite de numeros telefonicos atingido");
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                Phones.Add(new Phone());
+            }
         }
     }
 }
