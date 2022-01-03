@@ -15,41 +15,31 @@ namespace Domain.Models.Suppliers
 
         protected SupplierJuridical() { }
 
-        public SupplierJuridical(Guid emailId, Guid addressId, string fantasyName, DateTime open, string cnpj, string companyName, string ddd, string number, PhoneType type)
+        public SupplierJuridical(Guid emailId, Guid addressId, string fantasyName, DateTime open, string cnpj, string companyName, Phone phone)
         {
             EmailId = emailId;
             AddressId = addressId;
-            FantasyName = fantasyName;
-            OpenDate = open;
-            Cnpj = cnpj;
+            SetOpenDate(open);
+            SetCnpj(cnpj);
+            SetCompanyName(companyName);
+            SetFantasyName(fantasyName);
+            SetAddPhone(phone);
+        }
+
+        public void SetCompanyName(string companyName)
+        {
             CompanyName = companyName;
-
-            SetPhone(ddd, number, type);
         }
 
-        public void SetPhone(string ddd, string number, PhoneType type)
+        public void SetCnpj(string cnpj)
         {
-
-            if (Phones.Count >= 3)
-            {
-                throw new Exception("Quantidade limite de numeros telefonicos atingido");
-            }
-
-            Phones.Add(new Phone(ddd, number, type));
-
+            Cnpj = cnpj;
         }
 
-        public void CreatePhoneNumbers(int count = 1)
+        public void SetOpenDate(DateTime open)
         {
-            if (count >= 3)
-            {
-                throw new Exception("Quantidade limite de numeros telefonicos atingido");
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                Phones.Add(new Phone());
-            }
+            OpenDate = open;
         }
+
     }
 }

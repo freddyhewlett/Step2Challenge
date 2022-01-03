@@ -43,51 +43,58 @@ namespace Infrastructure.Repositories
 
         public async Task RemovePhysical(SupplierPhysical supplier)
         {
-            var phones = supplier.Phones;
-            var email = supplier.Email;
-            var address = supplier.Address;
-            _context.Remove(phones);
-            _context.Remove(email);
-            _context.Remove(address);
-            _context.Remove(supplier);
+            foreach (Phone phone in supplier.Phones)
+            {
+                _context.Phones.Remove(phone);
+            }
+            _context.Emails.Remove(supplier.Email);
+            _context.Addresses.Remove(supplier.Address);
+            _context.PhysicalSuppliers.Remove(supplier);
             await Task.CompletedTask;
         }
 
         public async Task RemoveJuridical(SupplierJuridical supplier)
         {
-            var phones = supplier.Phones;
-            var email = supplier.Email;
-            var address = supplier.Address;
-            _context.Remove(phones);
-            _context.Remove(email);
-            _context.Remove(address);
-            _context.Remove(supplier);
+            foreach (Phone phone in supplier.Phones)
+            {
+                _context.Phones.Remove(phone);
+            }
+            _context.Emails.Remove(supplier.Email);
+            _context.Addresses.Remove(supplier.Address);
+            _context.JuridicalSuppliers.Remove(supplier);
             await Task.CompletedTask;
         }
 
         public async Task UpdatePhysical(SupplierPhysical supplier)
-        {
-
+        {           
+            await UpdateAddress(supplier.Address);
+            await UpdateEmail(supplier.Email);
+            foreach (var phone in supplier.Phones)
+            {
+                await UpdatePhone(phone);
+            }
             _context.Update(supplier);
             await Task.CompletedTask;
         }
 
         public async Task UpdateJuridical(SupplierJuridical supplier)
         {
-
+            await UpdateAddress(supplier.Address);
+            await UpdateEmail(supplier.Email);
             _context.Update(supplier);
             await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<SupplierPhysical>> ToListPhysical()
         {
-            return await _context.PhysicalSuppliers.ToListAsync();
-            //return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
+            //return await _context.PhysicalSuppliers.ToListAsync();
+            return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
         }
 
         public async Task<IEnumerable<SupplierJuridical>> ToListJuridical()
         {
-            return await _context.JuridicalSuppliers.ToListAsync();
+            //return await _context.JuridicalSuppliers.ToListAsync();
+            return await _context.JuridicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
         }
 
         public IQueryable<SupplierPhysical> SearchPhysicalString(string search)
@@ -106,7 +113,7 @@ namespace Infrastructure.Repositories
 
         public async Task<SupplierPhysical> FindPhysicalById(Guid id)
         {
-            return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.PhysicalSuppliers.AsNoTracking().Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<SupplierJuridical> FindJuridicalById(Guid id)

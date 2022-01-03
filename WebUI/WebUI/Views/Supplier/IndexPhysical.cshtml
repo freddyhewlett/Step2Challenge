@@ -28,9 +28,6 @@
                 @Html.DisplayNameFor(model => model.FantasyName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
@@ -61,10 +58,7 @@
                 @Html.DisplayFor(modelItem => item.FantasyName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Address.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email.Id)
+                @Html.DisplayFor(modelItem => item.Email.EmailAddress)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.InsertDate)
@@ -73,9 +67,9 @@
                 @Html.DisplayFor(modelItem => item.UpdateDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="EditPhysical" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="DetailsPhysical" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="DeletePhysical" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

@@ -83,6 +83,11 @@ namespace Domain.Services
                 _notifierService.AddError("Já existe fornecedor cadastrado com este CPF.");
                 return;
             }
+            if (_supplierRepository.FindPhysical(x => x.FantasyName == supplier.FantasyName).Result != null)
+            {
+                _notifierService.AddError("Já existe fornecedor cadastrado com este nome fantasia.");
+                return;
+            }
             if (supplier.BirthDate.Date >= DateTime.Now.AddYears(-18).Date)
             {
                 _notifierService.AddError("Cadastro permitido apenas para maiores de 18 anos.");
@@ -105,6 +110,11 @@ namespace Domain.Services
                 _notifierService.AddError("Já existe fornecedor cadastrado com este CNPJ.");
                 return;
             }
+            if (_supplierRepository.FindJuridical(x => x.FantasyName == supplier.FantasyName).Result != null)
+            {
+                _notifierService.AddError("Já existe fornecedor cadastrado com este nome fantasia.");
+                return;
+            }
             if (!supplier.Cnpj.IsCnpj())
             {
                 _notifierService.AddError("CNPJ INVALIDO");
@@ -117,10 +127,10 @@ namespace Domain.Services
 
         public async Task RemovePhysical(Guid id)
         {
-            var remove = await FindPhysicalById(id);
+            var supplier = await FindPhysicalById(id);
             if (_notifierService.HasError()) return;
 
-            await _supplierRepository.RemovePhysical(remove);
+            await _supplierRepository.RemovePhysical(supplier);
             await _supplierRepository.SaveChanges();
         }
 
@@ -135,8 +145,24 @@ namespace Domain.Services
 
         public async Task UpdatePhysical(SupplierPhysical supplier)
         {
-
             if (_notifierService.HasError()) return;
+            var result = await _supplierRepository.FindPhysicalById(supplier.Id);
+
+            if (result == null)
+            {
+                //Retornar notificação
+                return;
+            }
+            result.SetFantasyName(supplier.FantasyName);
+            result.SetAddress(supplier.Address);
+            result.SetEmail(supplier.Email.EmailAddress);
+            result.SetBirthDate(supplier.BirthDate);
+            result.SetCpf(supplier.Cpf);
+            result.SetFullName(supplier.FullName);
+            foreach (Phone phone in supplier.Phones)
+            {
+                result.SetUpdatePhone(phone);
+            }
 
             await _supplierRepository.UpdatePhysical(supplier);
             await _supplierRepository.SaveChanges();

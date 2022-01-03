@@ -7,9 +7,9 @@ namespace Domain.Models.Suppliers
 {
     public class SupplierPhysical : Supplier
     {
-        public string FullName { get; set; }
-        public string Cpf { get; set; }
-        public DateTime BirthDate { get; set; }
+        public string FullName { get; private set; }
+        public string Cpf { get; private set; }
+        public DateTime BirthDate { get; private set; }
 
         protected SupplierPhysical() { }
 
@@ -17,36 +17,34 @@ namespace Domain.Models.Suppliers
         {
             EmailId = emailId;
             AddressId = addressId;
-            FantasyName = fantasyName;
-            BirthDate = birth;
-            Cpf = cpf;
-            FullName = fullName;
-
-            SetPhone(phone);
+            SetBirthDate(birth);
+            SetCpf(cpf);
+            SetFullName(fullName);
+            SetFantasyName(fantasyName);
+            SetAddPhone(phone);
         }
 
-        public void SetPhone(Phone phone)
+        public void SetFullName(string fullName)
         {
-
-            if (Phones.Count >= 3)
+            if (FullName != fullName)
             {
-                throw new Exception("Quantidade limite de numeros telefonicos atingido");
-            }
-
-            Phones.Add(phone);
-
+                FullName = fullName;
+            }            
         }
 
-        public void CreatePhoneNumbers(int count = 1)
+        public void SetCpf(string cpf)
         {
-            if (count >= 3)
+            if (Cpf != cpf)
             {
-                throw new Exception("Quantidade limite de numeros telefonicos atingido");
-            }
+                Cpf = cpf;
+            }            
+        }
 
-            for (int i = 0; i < count; i++)
+        public void SetBirthDate(DateTime birth)
+        {
+            if (BirthDate != birth)
             {
-                Phones.Add(new Phone());
+                BirthDate = birth;
             }
         }
     }

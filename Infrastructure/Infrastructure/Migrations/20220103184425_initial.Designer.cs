@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RegisterDbContext))]
-    [Migration("20211228181858_initial")]
+    [Migration("20220103184425_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,7 +193,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("PhoneType")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("SupplierId")
+                    b.Property<Guid>("SupplierId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -301,9 +301,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Models.Suppliers.Phone", b =>
                 {
-                    b.HasOne("Domain.Models.Suppliers.Supplier", null)
+                    b.HasOne("Domain.Models.Suppliers.Supplier", "Supplier")
                         .WithMany("Phones")
-                        .HasForeignKey("SupplierId");
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Suppliers.Supplier", b =>

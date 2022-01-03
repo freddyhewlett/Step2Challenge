@@ -1,16 +1,16 @@
 ﻿@model SupplierPhysicalViewModel
 
 @{
-    ViewData["Title"] = "CreatePhysical";
+    ViewData["Title"] = "EditPhysical";
 }
 
-<h1>CreatePhysical</h1>
+<h1>EditPhysical</h1>
 
 <h4>SupplierPhysical</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreatePhysical">
+        <form asp-action="EditPhysical">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FullName" class="control-label"></label>
@@ -105,9 +105,10 @@
                     <input asp-for=@Model.OfficePhone class="form-control" />
                     <span asp-validation-for=@Model.OfficePhone class="text-danger"></span>
                 </div>
-            </div>            
+            </div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

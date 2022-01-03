@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models.Suppliers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -47,7 +48,8 @@ namespace WebUI.Controllers
             return View(supplier);
         }
 
-        // GET: SupplierController/Details/5
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> DetailsPhysical(Guid id)
         {
             var supplier = await _supplierService.FindPhysicalById(id);
@@ -119,6 +121,18 @@ namespace WebUI.Controllers
         {
             if (!ModelState.IsValid) return View(supplier);
 
+            if (supplier.MobilePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
+            }
+            if (supplier.HomePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.HomePhone[..2], Number = supplier.HomePhone[2..], PhoneType = PhoneType.Home });
+            }
+            if (supplier.OfficePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.OfficePhone[..2], Number = supplier.OfficePhone[2..], PhoneType = PhoneType.Office });
+            }
             await _supplierService.InsertJuridical(_mapper.Map<SupplierJuridical>(supplier));
 
             if (!ValidOperation())
@@ -136,8 +150,14 @@ namespace WebUI.Controllers
             {
                 _notifier.AddError("Fornecedor não encontrado.");
             }
-            var viewModel = new SupplierPhysicalViewModel { };
-            return View(_mapper.Map<SupplierPhysicalViewModel>(supplier));
+            var viewModel = _mapper.Map<SupplierPhysicalViewModel>(supplier);
+            var homePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Home).FirstOrDefault();
+            var mobilePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Mobile).FirstOrDefault();
+            var officePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Office).FirstOrDefault();
+            if (homePhone != null) viewModel.HomePhone = homePhone.Ddd + homePhone.Number;
+            if (mobilePhone != null) viewModel.MobilePhone = mobilePhone.Ddd + mobilePhone.Number;
+            if (officePhone != null) viewModel.OfficePhone = officePhone.Ddd + officePhone.Number;
+            return View(viewModel);
         }
 
         // POST: SupplierController/Edit/5
@@ -145,6 +165,36 @@ namespace WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPhysical(SupplierPhysicalViewModel supplier)
         {
+            if (!ModelState.IsValid) return View(supplier);
+
+            //var control = await _supplierService.FindPhysicalById(supplier.Id);
+
+            //if (supplier.MobilePhone != null)
+            //{
+            //    foreach (Phone phone in control.Phones)
+            //    {
+            //        if (phone.PhoneType == Domain.Models.Enum.PhoneType.Mobile)
+            //        {
+            //            if (!supplier.MobilePhone.Contains(phone.Number))
+            //            {
+            //                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
+            //            }                        
+            //        }
+            //    }                
+            //}
+
+            if (supplier.MobilePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Home });
+            }
+            if (supplier.HomePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.HomePhone[..2], Number = supplier.HomePhone[2..], PhoneType = PhoneType.Home });
+            }
+            if (supplier.OfficePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.OfficePhone[..2], Number = supplier.OfficePhone[2..], PhoneType = PhoneType.Office });
+            }
             await _supplierService.UpdatePhysical(_mapper.Map<SupplierPhysical>(supplier));
 
             if (!ValidOperation())

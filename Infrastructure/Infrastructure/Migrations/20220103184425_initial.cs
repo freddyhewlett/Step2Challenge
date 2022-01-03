@@ -103,7 +103,7 @@ namespace Infrastructure.Migrations
                     Ddd = table.Column<string>(nullable: true),
                     Number = table.Column<string>(nullable: true),
                     PhoneType = table.Column<int>(nullable: false),
-                    SupplierId = table.Column<Guid>(nullable: true)
+                    SupplierId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,7 +113,7 @@ namespace Infrastructure.Migrations
                         column: x => x.SupplierId,
                         principalTable: "Supplier",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
