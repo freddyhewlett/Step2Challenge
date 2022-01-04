@@ -15,8 +15,9 @@ namespace Domain.Models.Suppliers
 
         public Phone() { }
 
-        public Phone(string ddd, string number, PhoneType phoneType)
+        public Phone(Guid supplierId, string ddd, string number, PhoneType phoneType)
         {
+            SupplierId = supplierId;
             Ddd = ddd;
             Number = number;
             PhoneType = phoneType;

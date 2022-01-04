@@ -22,22 +22,31 @@ namespace Domain.Models.Suppliers
 
         public void SetUpdatePhone(Phone phone) 
         {
-            var result = Phones.Where(x => x.PhoneType == phone.PhoneType).FirstOrDefault();
-
-            if (result == null)
+            if (!PhoneExists(phone.PhoneType))
             {
-                SetAddPhone(new Phone(phone.Ddd, phone.Number, phone.PhoneType));
+                SetAddPhone(new Phone(Id, phone.Ddd, phone.Number, phone.PhoneType));
             }
             else
             {
-                SetRemovePhone(phone);
-                result.SetPhone(phone);
+                var phoneExist = Phones.Where(x => x.PhoneType == phone.PhoneType).FirstOrDefault();
+
+                if (phoneExist.Number != phone.Number)
+                {
+                    phoneExist.SetPhone(phone);
+                }                
             }
         }
 
         public void SetRemovePhone(Phone phone)
         {
-            Phones.Remove(phone);
+            if (PhoneExists(phone.PhoneType))
+            {
+                Phones.Remove(phone);
+            }
+            else
+            {
+                throw new Exception("Numero telefonico inexistente não pode ser removido.");
+            }            
         }
 
         public void SetAddPhone(Phone phone)
@@ -52,10 +61,14 @@ namespace Domain.Models.Suppliers
 
         public void SetEmail(string email)
         {
-            if (Email.EmailAddress != email)
+            if (Email == null)
             {
                 Email = new Email(email);
-            }            
+            }
+            else
+            {
+                Email.SetEmail(email);
+            }                        
         }
 
         public void SetFantasyName(string name)
@@ -65,10 +78,19 @@ namespace Domain.Models.Suppliers
 
         public void SetAddress(Address address)
         {
-            if (Address.ZipCode != address.ZipCode)
+            if (Address == null)
             {
                 Address = new Address(address.ZipCode, address.Street, address.Number, address.Complement, address.Reference, address.Neighborhood, address.City, address.State);
             }
+            else
+            {
+                Address.SetAddress(address.ZipCode, address.Street, address.Number, address.Complement, address.Reference, address.Neighborhood, address.City, address.State);
+            }
+        }
+
+        public bool PhoneExists(PhoneType type)
+        {
+            return Phones.Where(x => x.PhoneType == type).FirstOrDefault() != null;
         }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Domain.Models;
+using Domain.Models.Enum;
 using Domain.Models.Products;
 using Domain.Models.Suppliers;
+using Domain.Models.Validation;
 using Domain.Tools;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,26 +149,85 @@ namespace Domain.Services
 
         public async Task UpdatePhysical(SupplierPhysical supplier)
         {
+            RunValidation(new PhysicalValidation(), supplier);
+
+            foreach (var item in supplier.Phones)
+            {
+                RunValidation(new PhoneValidation(), item);
+            }
+
+            //TODO Fluent Validation (classes) para Address e Email
+
             if (_notifierService.HasError()) return;
             var result = await _supplierRepository.FindPhysicalById(supplier.Id);
 
             if (result == null)
             {
-                //Retornar notificação
+                _notifierService.AddError("Fornecedor não encontrado");
                 return;
             }
+
             result.SetFantasyName(supplier.FantasyName);
             result.SetAddress(supplier.Address);
             result.SetEmail(supplier.Email.EmailAddress);
             result.SetBirthDate(supplier.BirthDate);
             result.SetCpf(supplier.Cpf);
             result.SetFullName(supplier.FullName);
-            foreach (Phone phone in supplier.Phones)
+            
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault() != null)
             {
-                result.SetUpdatePhone(phone);
+                result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault());
+                await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault());
             }
 
-            await _supplierRepository.UpdatePhysical(supplier);
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault() != null)
+            {
+                if (result.PhoneExists(PhoneType.Home))
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault());
+                    await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Home).First());
+                }
+                else
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault());
+                    await _supplierRepository.InsertPhone(result.Phones.Where(x => x.PhoneType == PhoneType.Home).First());
+                }
+                
+            }
+            else
+            {
+                var phoneExist = result.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault();
+                if (phoneExist != null)
+                {
+                    result.SetRemovePhone(phoneExist);
+                    await _supplierRepository.RemovePhone(phoneExist);
+                }                
+            }
+
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault() != null)
+            {
+                if (result.PhoneExists(PhoneType.Office))
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault());
+                    await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Office).First());
+                }
+                else
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault());
+                    await _supplierRepository.InsertPhone(result.Phones.Where(x => x.PhoneType == PhoneType.Office).First());
+                }
+            }
+            else
+            {
+                var phoneExist = result.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault();
+                if (phoneExist != null)
+                {
+                    result.SetRemovePhone(phoneExist);
+                    await _supplierRepository.RemovePhone(phoneExist);
+                }
+            }
+
+            await _supplierRepository.UpdatePhysical(result);
             await _supplierRepository.SaveChanges();
         }
 
@@ -231,6 +294,20 @@ namespace Domain.Services
         {
             await _supplierRepository.UpdateEmail(email);
             await _supplierRepository.SaveChanges();
+        }
+
+        private bool RunValidation<Tv, Te>(Tv validation, Te entity) where Tv : AbstractValidator<Te> where Te : Entity
+        {
+            var validator = validation.Validate(entity);
+
+            if (validator.IsValid) return true;
+
+            foreach (var item in validator.Errors)
+            {
+                _notifierService.AddError(item.ErrorMessage);
+            }
+
+            return false;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Domain.Models.Suppliers
 
         public Email(string email)
         {
-            EmailAddress = email;
+            SetEmail(email);
         }
 
         public void SetEmail(string email)

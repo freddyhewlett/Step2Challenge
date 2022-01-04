@@ -19,6 +19,11 @@ namespace Domain.Models.Suppliers
 
         public Address(string zipCode, string street, string number, string complement, string reference, string neighborhood, string city, string state)
         {
+            SetAddress(zipCode, street, number, complement, reference, neighborhood, city, state);
+        }
+
+        public void SetAddress(string zipCode, string street, string number, string complement, string reference, string neighborhood, string city, string state)
+        {
             ZipCode = zipCode;
             Street = street;
             Number = number;

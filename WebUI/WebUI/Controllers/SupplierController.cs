@@ -26,13 +26,6 @@ namespace WebUI.Controllers
             _supplierService = supplierService;
         }
 
-        public IActionResult Index(int index)
-        {
-            if (index == 1) return RedirectToAction(nameof(IndexPhysical));
-
-            return RedirectToAction(nameof(IndexJuridical));
-        }
-
         // GET: SupplierController
         public async Task<IActionResult> IndexPhysical()
         {
@@ -183,10 +176,8 @@ namespace WebUI.Controllers
             //    }                
             //}
 
-            if (supplier.MobilePhone != null)
-            {
-                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Home });
-            }
+            supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
+
             if (supplier.HomePhone != null)
             {
                 supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.HomePhone[..2], Number = supplier.HomePhone[2..], PhoneType = PhoneType.Home });

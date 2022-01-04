@@ -18,7 +18,9 @@ namespace WebUI.Models.Suppliers
         public AddressViewModel Address { get; set; }
         public Guid AddressId { get; set; }
         public EmailViewModel Email { get; set; }
-        public Guid EmailId { get; set; }       
+        public Guid EmailId { get; set; }
+        
+        [Required]
         public string MobilePhone { get; set; }
         public string HomePhone { get; set; }
         public string OfficePhone { get; set; }

@@ -28,8 +28,6 @@ namespace Domain.Models.Validation
             When(x => x.PhoneType == Enum.PhoneType.Home, () =>
             {
                 RuleFor(x => x.Number)
-                   .NotEmpty()
-                   .WithMessage("O telefone fixo é obrigatorio")
                    .Length(8, 8)
                    .WithMessage("o telefone fixo deve conter 8 numeros");
             });
@@ -37,8 +35,6 @@ namespace Domain.Models.Validation
             When(x => x.PhoneType == Enum.PhoneType.Office, () =>
             {
                 RuleFor(x => x.Number)
-                   .NotEmpty()
-                   .WithMessage("O telefone comercial é obrigatorio")
                    .Length(8, 9)
                    .WithMessage("o telefone comercial deve conter entre 8 e 9 numeros");
             });

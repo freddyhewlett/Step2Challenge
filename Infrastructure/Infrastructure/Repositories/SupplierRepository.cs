@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
 
         public async Task InsertJuridical(SupplierJuridical supplier)
         {
-            await _context.AddAsync(supplier);
+            await _context.JuridicalSuppliers.AddAsync(supplier);
         }
 
         public async Task RemovePhysical(SupplierPhysical supplier)
@@ -66,14 +66,8 @@ namespace Infrastructure.Repositories
         }
 
         public async Task UpdatePhysical(SupplierPhysical supplier)
-        {           
-            await UpdateAddress(supplier.Address);
-            await UpdateEmail(supplier.Email);
-            foreach (var phone in supplier.Phones)
-            {
-                await UpdatePhone(phone);
-            }
-            _context.Update(supplier);
+        {
+            _context.PhysicalSuppliers.Update(supplier);
             await Task.CompletedTask;
         }
 
@@ -81,7 +75,7 @@ namespace Infrastructure.Repositories
         {
             await UpdateAddress(supplier.Address);
             await UpdateEmail(supplier.Email);
-            _context.Update(supplier);
+            _context.JuridicalSuppliers.Update(supplier);
             await Task.CompletedTask;
         }
 
@@ -135,40 +129,40 @@ namespace Infrastructure.Repositories
 
         public async Task InsertPhone(Phone phone)
         {
-            await _context.AddAsync(phone);
+            await _context.Phones.AddAsync(phone);
         }
 
         public async Task RemovePhone(Phone phone)
         {
-            _context.Remove(phone);
+            _context.Phones.Remove(phone);
             await Task.CompletedTask;
         }
 
         public async Task UpdatePhone(Phone phone)
         {
-            _context.Update(phone);
+            _context.Phones.Update(phone);
             await Task.CompletedTask;
         }
 
         public async Task InsertAddress(Address address)
         {
-            await _context.AddAsync(address);
+            await _context.Addresses.AddAsync(address);
         }
 
         public async Task UpdateAddress(Address address)
         {
-            _context.Update(address);
+            _context.Addresses.Update(address);
             await Task.CompletedTask;
         }
 
         public async Task InsertEmail(Email email)
         {
-            await _context.AddAsync(email);
+            await _context.Emails.AddAsync(email);
         }
 
         public async Task UpdateEmail(Email email)
         {
-            _context.Update(email);
+            _context.Emails.Update(email);
             await Task.CompletedTask;
         }
 
