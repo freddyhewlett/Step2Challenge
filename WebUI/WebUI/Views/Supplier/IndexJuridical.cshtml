@@ -7,7 +7,7 @@
 <h1>IndexJuridical</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="CreateJuridical">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -61,10 +61,10 @@
                 @Html.DisplayFor(modelItem => item.FantasyName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Address.Id)
+                @Html.DisplayFor(modelItem => item.Address.Street)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email.Id)
+                @Html.DisplayFor(modelItem => item.Email.EmailAddress)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.InsertDate)

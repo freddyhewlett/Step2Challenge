@@ -89,7 +89,6 @@
             </div>
             <div class="form-group">
                 <label asp-for="Phones" class="control-label"></label>
-                <select asp-for=@Model.PhoneType asp-items="Html.GetEnumSelectList<WebUI.Models.Enum.PhoneType>()"></select>
                 <div class="form-group">
                     <label asp-for=@Model.HomePhone class="control-label"></label>
                     <input asp-for=@Model.HomePhone class="form-control" />
@@ -114,7 +113,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="IndexJuridical">Back to List</a>
 </div>
 
 @section Scripts {

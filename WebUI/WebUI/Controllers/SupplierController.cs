@@ -67,7 +67,6 @@ namespace WebUI.Controllers
         public IActionResult CreatePhysical()
         {
             var newSupplier = new SupplierPhysicalViewModel();
-            newSupplier.CreatePhoneNumbers(1);
             return View(newSupplier);
         }
 
@@ -128,6 +127,7 @@ namespace WebUI.Controllers
             }
             await _supplierService.InsertJuridical(_mapper.Map<SupplierJuridical>(supplier));
 
+
             if (!ValidOperation())
             {
                 return RedirectToAction(nameof(Error));
@@ -160,22 +160,6 @@ namespace WebUI.Controllers
         {
             if (!ModelState.IsValid) return View(supplier);
 
-            //var control = await _supplierService.FindPhysicalById(supplier.Id);
-
-            //if (supplier.MobilePhone != null)
-            //{
-            //    foreach (Phone phone in control.Phones)
-            //    {
-            //        if (phone.PhoneType == Domain.Models.Enum.PhoneType.Mobile)
-            //        {
-            //            if (!supplier.MobilePhone.Contains(phone.Number))
-            //            {
-            //                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
-            //            }                        
-            //        }
-            //    }                
-            //}
-
             supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
 
             if (supplier.HomePhone != null)
@@ -204,14 +188,32 @@ namespace WebUI.Controllers
             {
                 _notifier.AddError("Fornecedor não encontrado.");
             }
-            var viewModel = new SupplierJuridicalViewModel { };
-            return View(_mapper.Map<SupplierJuridicalViewModel>(supplier));
+            var viewModel = _mapper.Map<SupplierJuridicalViewModel>(supplier);
+            var homePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Home).FirstOrDefault();
+            var mobilePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Mobile).FirstOrDefault();
+            var officePhone = supplier.Phones.Where(x => x.PhoneType == Domain.Models.Enum.PhoneType.Office).FirstOrDefault();
+            if (homePhone != null) viewModel.HomePhone = homePhone.Ddd + homePhone.Number;
+            if (mobilePhone != null) viewModel.MobilePhone = mobilePhone.Ddd + mobilePhone.Number;
+            if (officePhone != null) viewModel.OfficePhone = officePhone.Ddd + officePhone.Number;
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditJuridical(SupplierJuridicalViewModel supplier)
         {
+            if (!ModelState.IsValid) return View(supplier);
+
+            supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.MobilePhone[..2], Number = supplier.MobilePhone[2..], PhoneType = PhoneType.Mobile });
+
+            if (supplier.HomePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.HomePhone[..2], Number = supplier.HomePhone[2..], PhoneType = PhoneType.Home });
+            }
+            if (supplier.OfficePhone != null)
+            {
+                supplier.Phones.Add(new PhoneViewModel() { Ddd = supplier.OfficePhone[..2], Number = supplier.OfficePhone[2..], PhoneType = PhoneType.Office });
+            }
             await _supplierService.UpdateJuridical(_mapper.Map<SupplierJuridical>(supplier));
 
             if (!ValidOperation())
@@ -274,18 +276,5 @@ namespace WebUI.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        //public void CreatePhoneNumbers(SupplierViewModel supplier, int count = 1)
-        //{
-        //    if (supplier.Phones.Count >= 3)
-        //    {
-        //        _notifier.AddError("Quantidade limite de numeros telefonicos atingido.");
-        //    }
-
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        supplier.Phones.Add(new PhoneViewModel());
-        //    }
-        //}
     }
 }

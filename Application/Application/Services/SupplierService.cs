@@ -131,10 +131,10 @@ namespace Domain.Services
 
         public async Task RemovePhysical(Guid id)
         {
-            var supplier = await FindPhysicalById(id);
+            var remove = await FindPhysicalById(id);
             if (_notifierService.HasError()) return;
 
-            await _supplierRepository.RemovePhysical(supplier);
+            await _supplierRepository.RemovePhysical(remove);
             await _supplierRepository.SaveChanges();
         }
 
@@ -234,9 +234,85 @@ namespace Domain.Services
         public async Task UpdateJuridical(SupplierJuridical supplier)
         {
 
-            if (_notifierService.HasError()) return;
+            RunValidation(new JuridicalValidation(), supplier);
 
-            await _supplierRepository.UpdateJuridical(supplier);
+            foreach (var item in supplier.Phones)
+            {
+                RunValidation(new PhoneValidation(), item);
+            }
+
+            //TODO Fluent Validation (classes) para Address e Email
+
+            if (_notifierService.HasError()) return;
+            var result = await _supplierRepository.FindJuridicalById(supplier.Id);
+
+            if (result == null)
+            {
+                _notifierService.AddError("Fornecedor não encontrado");
+                return;
+            }
+
+            result.SetFantasyName(supplier.FantasyName);
+            result.SetAddress(supplier.Address);
+            result.SetEmail(supplier.Email.EmailAddress);
+            result.SetOpenDate(supplier.OpenDate);
+            result.SetCnpj(supplier.Cnpj);
+            result.SetCompanyName(supplier.CompanyName);
+
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault() != null)
+            {
+                result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault());
+                await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Mobile).FirstOrDefault());
+            }
+
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault() != null)
+            {
+                if (result.PhoneExists(PhoneType.Home))
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault());
+                    await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Home).First());
+                }
+                else
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault());
+                    await _supplierRepository.InsertPhone(result.Phones.Where(x => x.PhoneType == PhoneType.Home).First());
+                }
+
+            }
+            else
+            {
+                var phoneExist = result.Phones.Where(x => x.PhoneType == PhoneType.Home).FirstOrDefault();
+                if (phoneExist != null)
+                {
+                    result.SetRemovePhone(phoneExist);
+                    await _supplierRepository.RemovePhone(phoneExist);
+                }
+            }
+
+            if (supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault() != null)
+            {
+                if (result.PhoneExists(PhoneType.Office))
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault());
+                    await _supplierRepository.UpdatePhone(result.Phones.Where(x => x.PhoneType == PhoneType.Office).First());
+                }
+                else
+                {
+                    result.SetUpdatePhone(supplier.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault());
+                    await _supplierRepository.InsertPhone(result.Phones.Where(x => x.PhoneType == PhoneType.Office).First());
+                }
+            }
+            else
+            {
+                var phoneExist = result.Phones.Where(x => x.PhoneType == PhoneType.Office).FirstOrDefault();
+                if (phoneExist != null)
+                {
+                    result.SetRemovePhone(phoneExist);
+                    await _supplierRepository.RemovePhone(phoneExist);
+                }
+            }
+
+            await _supplierRepository.UpdateJuridical(result);
             await _supplierRepository.SaveChanges();
         }
 

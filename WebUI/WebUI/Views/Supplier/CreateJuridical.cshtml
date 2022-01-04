@@ -1,31 +1,31 @@
-﻿@model SupplierPhysicalViewModel
+﻿@model SupplierJuridicalViewModel
 
 @{
-    ViewData["Title"] = "EditPhysical";
+    ViewData["Title"] = "CreateJuridical";
 }
 
-<h1>EditPhysical</h1>
+<h1>CreateJuridical</h1>
 
-<h4>SupplierPhysical</h4>
+<h4>SupplierJuridical</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditPhysical">
+        <form asp-action="CreateJuridical">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+                <label asp-for="CompanyName" class="control-label"></label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Cpf" class="control-label"></label>
-                <input asp-for="Cpf" class="form-control" />
-                <span asp-validation-for="Cpf" class="text-danger"></span>
+                <label asp-for="Cnpj" class="control-label"></label>
+                <input asp-for="Cnpj" class="form-control" />
+                <span asp-validation-for="Cnpj" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BirthDate" class="control-label"></label>
-                <input asp-for="BirthDate" class="form-control" />
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
+                <label asp-for="OpenDate" class="control-label"></label>
+                <input asp-for="OpenDate" class="form-control" />
+                <span asp-validation-for="OpenDate" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -90,14 +90,14 @@
             <div class="form-group">
                 <label asp-for="Phones" class="control-label"></label>
                 <div class="form-group">
-                    <label asp-for=@Model.HomePhone class="control-label"></label>
-                    <input asp-for=@Model.HomePhone class="form-control" />
-                    <span asp-validation-for=@Model.HomePhone class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <label asp-for=@Model.MobilePhone class="control-label"></label>
                     <input asp-for=@Model.MobilePhone class="form-control" />
                     <span asp-validation-for=@Model.MobilePhone class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for=@Model.HomePhone class="control-label"></label>
+                    <input asp-for=@Model.HomePhone class="form-control" />
+                    <span asp-validation-for=@Model.HomePhone class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for=@Model.OfficePhone class="control-label"></label>
@@ -105,16 +105,15 @@
                     <span asp-validation-for=@Model.OfficePhone class="text-danger"></span>
                 </div>
             </div>
-            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="IndexJuridical">Back to List</a>
 </div>
 
 @section Scripts {

@@ -73,21 +73,17 @@ namespace Infrastructure.Repositories
 
         public async Task UpdateJuridical(SupplierJuridical supplier)
         {
-            await UpdateAddress(supplier.Address);
-            await UpdateEmail(supplier.Email);
             _context.JuridicalSuppliers.Update(supplier);
             await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<SupplierPhysical>> ToListPhysical()
         {
-            //return await _context.PhysicalSuppliers.ToListAsync();
             return await _context.PhysicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
         }
 
         public async Task<IEnumerable<SupplierJuridical>> ToListJuridical()
         {
-            //return await _context.JuridicalSuppliers.ToListAsync();
             return await _context.JuridicalSuppliers.Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).ToListAsync();
         }
 
@@ -112,7 +108,7 @@ namespace Infrastructure.Repositories
 
         public async Task<SupplierJuridical> FindJuridicalById(Guid id)
         {
-            return await _context.JuridicalSuppliers.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.JuridicalSuppliers.AsNoTracking().Include(x => x.Address).Include(x => x.Email).Include(x => x.Phones).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Product>> ProductListByPhysical(Guid id)
