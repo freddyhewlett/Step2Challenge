@@ -7,10 +7,10 @@ namespace Domain.Models.Products
     public class Category : Entity
     {
         
-        public bool Active { get; set; }
-        public string Name { get; set; }       
+        public bool Active { get; private set; }
+        public string Name { get; private set; }       
 
-        public IEnumerable<Product> Products { get; set; }
+        public IEnumerable<Product> Products { get; private set; }
 
         protected Category() { }
 

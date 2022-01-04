@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
                 case "quantity_desc":
                     products = products.OrderByDescending(m => m.QuantityStock);
                     break;
-                case "Price":
+                case "PriceSales":
                     products = products.OrderBy(m => m.PriceSales);
                     break;
                 case "price_desc":

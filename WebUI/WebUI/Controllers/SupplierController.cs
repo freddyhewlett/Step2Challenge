@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Interfaces.Services;
 using Domain.Models.Suppliers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,9 +19,9 @@ namespace WebUI.Controllers
 {
     public class SupplierController : MainController
     {
-        private readonly Domain.Interfaces.Services.ISupplierService _supplierService;
+        private readonly ISupplierService _supplierService;
 
-        public SupplierController(IMapper mapper, Domain.Interfaces.Services.ISupplierService supplierService, Domain.Interfaces.Services.INotifierService notifier)
+        public SupplierController(IMapper mapper, ISupplierService supplierService, INotifierService notifier)
                                     : base(mapper, notifier)
         {
             _supplierService = supplierService;
