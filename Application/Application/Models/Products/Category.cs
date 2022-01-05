@@ -19,5 +19,10 @@ namespace Domain.Models.Products
             Name = name;
             Active = true;
         }
+
+        public void SetCategoryName(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Products;
+using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,5 +25,8 @@ namespace Domain.Interfaces.Repositories
         Task InsertImage(Image image);
         Task RemoveImage(Image image);
         Task UpdateImage(Image image);
+        Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers();
+        Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers();
+        Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy();
     }
 }

@@ -54,7 +54,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("InsertDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ProductId")
+                    b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -277,9 +277,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Models.Products.Image", b =>
                 {
-                    b.HasOne("Domain.Models.Products.Product", null)
-                        .WithMany("Image")
-                        .HasForeignKey("ProductId");
+                    b.HasOne("Domain.Models.Products.Product", "Product")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Products.Product", b =>

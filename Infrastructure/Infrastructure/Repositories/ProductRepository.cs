@@ -1,5 +1,6 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Products;
+using Domain.Models.Suppliers;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,12 +28,16 @@ namespace Infrastructure.Repositories
         
         public async Task Insert(Product product)
         {
-            await _context.AddAsync(product);
+            await _context.Products.AddAsync(product);
         }
 
         public async Task Remove(Product product)
         {
-            _context.Remove(product);
+            foreach (Image item in product.Images)
+            {
+                _context.Images.Remove(item);
+            }
+            _context.Products.Remove(product);
             await Task.CompletedTask;
         }
 
@@ -44,7 +49,7 @@ namespace Infrastructure.Repositories
         public async Task Update(Product product)
         {
 
-            _context.Update(product);
+            _context.Products.Update(product);
             await Task.CompletedTask;
         }
 
@@ -96,7 +101,33 @@ namespace Infrastructure.Repositories
         {
             return await _context.Categories.AsNoTracking().ToListAsync();
         }
-       
+
+        public async Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers()
+        {
+            return await _context.PhysicalSuppliers.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers()
+        {
+            return await _context.JuridicalSuppliers.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy()
+        {
+            var juridical = await _context.JuridicalSuppliers.AsNoTracking().ToListAsync();
+            var physical = await _context.PhysicalSuppliers.AsNoTracking().ToListAsync();
+            List<Supplier> all = new List<Supplier>();
+            foreach (var item in juridical)
+            {
+                all.Add(item);
+            }
+            foreach (var item in physical)
+            {
+                all.Add(item);
+            }
+            return all;
+        }
+
         public async Task<string> FindImagePath(Guid id)
         {
             var imageList = await _context.Images.AsNoTracking().ToListAsync();
@@ -107,24 +138,24 @@ namespace Infrastructure.Repositories
 
         public async Task<Product> FindById(Guid id)
         {
-            return await _context.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.Products.Include(x => x.Images).Include(x => x.Supplier).Include(x => x.Category).Where(x => x.Id == id).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task InsertImage(Image image)
         {
-            await _context.AddAsync(image);
+            await _context.Images.AddAsync(image);
         }
 
         public async Task RemoveImage(Image image)
         {
-            _context.Remove(image);
+            _context.Images.Remove(image);
             await Task.CompletedTask;
         }
 
         public async Task UpdateImage(Image image)
         {
 
-            _context.Update(image);
+            _context.Images.Update(image);
             await Task.CompletedTask;
         }
 

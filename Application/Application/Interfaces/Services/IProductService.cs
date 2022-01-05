@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Products;
+using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,9 @@ namespace Domain.Interfaces.Services
         Task<List<Product>> SortFilter(string sortOrder);
         IQueryable<Product> SearchString(string search, Guid? selectedCategory);
         Task<string> FindImagePath(Guid id);
+        Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers();
+        Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers();
+        Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy();
         //Task InsertImage();
         //Task UpdateImage();
         //Task RemoveImage();

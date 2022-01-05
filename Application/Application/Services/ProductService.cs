@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Domain.Models.Products;
+using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,6 +71,21 @@ namespace Domain.Services
         public async Task<IEnumerable<Category>> ListCategories()
         {
             return await _productRepository.ListCategories();
+        }
+
+        public async Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers()
+        {
+            return await _productRepository.ListPhysicalSuppliers();
+        }
+
+        public async Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers()
+        {
+            return await _productRepository.ListJuridicalSuppliers();
+        }
+
+        public async Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy()
+        {
+            return await _productRepository.ListAllSuppliersIdFantasy();
         }
 
         public async Task<List<Product>> SortFilter(string sortOrder)

@@ -1,26 +1,32 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Services;
+using Domain.Models.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebUI.Configuration;
+using WebUI.Models;
 using WebUI.Models.Products;
+using WebUI.Models.Suppliers;
 using WebUI.Utilities;
 
 namespace WebUI.Controllers
 {
     public class ProductController : MainController
     {
-        private readonly IProductService _supplierService;
+        private readonly IProductService _productService;
 
-        public ProductController(IMapper mapper, IProductService supplierService, INotifierService notifier)
+        public ProductController(IMapper mapper, IProductService productService, INotifierService notifier)
                                     : base(mapper, notifier)
         {
-            _supplierService = supplierService;
+            _productService = productService;
         }
 
         // GET: ProductController
@@ -32,7 +38,7 @@ namespace WebUI.Controllers
             ViewData["QuantitySortParm"] = sortOrder == "Quantity" ? "quantity_desc" : "Quantity";
             ViewData["PriceSalesSortParm"] = sortOrder == "PriceSales" ? "price_desc" : "PriceSales";
             ViewData["CurrentFilter"] = searchString;
-            var categoryViewModel = _mapper.Map<IEnumerable<CategoryViewModel>>(await _supplierService.ListCategories());
+            var categoryViewModel = _mapper.Map<IEnumerable<CategoryViewModel>>(await _productService.ListCategories());
             ViewBag.SelectedCategory = new SelectList(categoryViewModel, "Id", "Name", SelectedCategory);
 
             if (searchString != null)
@@ -46,11 +52,11 @@ namespace WebUI.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                var movieSearch = _mapper.Map<IEnumerable<ProductViewModel>>(_supplierService.SearchString(searchString, SelectedCategory));
+                var movieSearch = _mapper.Map<IEnumerable<ProductViewModel>>(_productService.SearchString(searchString, SelectedCategory));
                 return View(movieSearch);
             }
 
-            var sort = await _supplierService.SortFilter(sortOrder);
+            var sort = await _productService.SortFilter(sortOrder);
             var result = _mapper.Map<List<ProductViewModel>>(sort);
 
             int pageSize = 5;
@@ -59,72 +65,224 @@ namespace WebUI.Controllers
         }
 
         // GET: ProductController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(Guid id)
         {
-            return View();
+            var product = await _productService.FindById(id);
+            if (product == null)
+            {
+                _notifier.AddError("Produto não encontrado");
+            }
+            return View(_mapper.Map<ProductViewModel>(product));
         }
 
-        // GET: ProductController/Create
-        public ActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var result = new ProductViewModel();
+
+            return View(await MappingListCategories(result));
         }
 
         // POST: ProductController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(ProductViewModel newProduct)
         {
-            try
+            if (!ModelState.IsValid) return View(await MappingListCategories(newProduct));
+
+            string path = string.Empty;
+
+            if (newProduct.ImagesUpload.Count > 0)
             {
-                return RedirectToAction(nameof(Index));
+                foreach (var item in newProduct.ImagesUpload)
+                {
+                    path = Guid.NewGuid().ToString() + Path.GetExtension(item.FileName);
+
+                    if (UploadFile(item, path).Result)
+                    {
+                        newProduct.Images.Add(SetNewImagePath(path));
+                    }
+                }                
             }
-            catch
+                     
+            await _productService.Insert(_mapper.Map<Product>(newProduct));
+
+            if (!ValidOperation())
             {
-                return View();
+                return View(await MappingListCategories(newProduct));
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: ProductController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
         {
-            return View();
+            var product = await _productService.FindById(id);
+            if (product == null)
+            {
+                _notifier.AddError("Produto não encontrado.");
+            }
+
+            var productViewModel = _mapper.Map<ProductViewModel>(product);
+            return View(productViewModel);
         }
 
         // POST: ProductController/Edit/5
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> EditConfirmed(ProductViewModel productViewModel)
         {
-            try
+            if (!ModelState.IsValid) return View(productViewModel);
+
+            if (productViewModel.ImagesUpload.Count > 1)
             {
-                return RedirectToAction(nameof(Index));
+                foreach (var item in productViewModel.ImagesUpload)
+                {
+                    string path = string.Empty;
+                    var productString = await _productService.FindImagePath(productViewModel.Id);
+                    if (productString != null)
+                    {
+                        var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", productString);
+                        if (System.IO.File.Exists(oldPath))
+                        {
+                            System.IO.File.Delete(oldPath);
+                        }
+                    }
+                    path = Guid.NewGuid().ToString() + Path.GetExtension(item.FileName);
+
+                    if (UpdateFile(item, path).Result)
+                    {
+                        var addImage = productViewModel.Images.Where(x => x.ImagePath == null).FirstOrDefault();
+                        addImage.ImagePath = path;
+                        productViewModel.Images.Add(addImage);
+                    }
+                }
+                
             }
-            catch
+
+            await _productService.Update(_mapper.Map<Product>(productViewModel));
+
+            if (!ValidOperation())
             {
-                return View();
+                return RedirectToAction(nameof(Error));
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: ProductController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return View();
+            var product = await _productService.FindById(id);
+            if (product == null)
+            {
+                _notifier.AddError("Produto não encontrado");
+            }
+            return View(_mapper.Map<ProductViewModel>(product));
         }
 
         // POST: ProductController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            try
+            var product = await _productService.FindById(id);
+
+            if (product != null)
             {
-                return RedirectToAction(nameof(Index));
+                var viewModel = _mapper.Map<ProductViewModel>(product);
+                if (viewModel.Images.Count > 0)
+                {
+                    foreach (var item in viewModel.Images)
+                    {
+                        if (System.IO.File.Exists(item.ImagePath))
+                        {
+                            System.IO.File.Delete(item.ImagePath);
+                        }
+                    }                    
+                }
             }
-            catch
+            await _productService.Remove(id);
+
+            if (_notifier.HasError()) return RedirectToAction(nameof(Error));
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private async Task<bool> UploadFile(IFormFile imageUpload, string imgPath)
+        {
+            if (imageUpload == null || imageUpload?.Length == 0)
             {
-                return View();
+                return false;
             }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imgPath);
+
+            if (System.IO.File.Exists(path))
+            {
+                return false;
+            }
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await imageUpload.CopyToAsync(stream);
+            }
+            return true;
+        }
+
+        private async Task<ProductViewModel> MappingListCategories(ProductViewModel viewModel)
+        {
+            await MappingListSuppliers(viewModel);
+            viewModel.Categories = _mapper.Map<IEnumerable<CategoryViewModel>>(await _productService.ListCategories());
+            return viewModel;
+        }
+
+        private async Task<ProductViewModel> MappingListSuppliers(ProductViewModel viewModel)
+        {
+            //var physical = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListPhysicalSuppliers());
+            //viewModel.Suppliers = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListJuridicalSuppliers());
+            //foreach (var item in physical)
+            //{
+            //    viewModel.Suppliers.Append(item);
+            //}
+            viewModel.Suppliers = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListAllSuppliersIdFantasy());
+            return viewModel;
+        }
+
+        private static ImageViewModel SetNewImagePath(string path)
+        {
+            ImageViewModel imageViewModel = new ImageViewModel(); 
+            imageViewModel.ImagePath = path;
+            return imageViewModel;
+        }
+
+        private async Task<bool> UpdateFile(IFormFile imageUpload, string imgPath)
+        {
+            if (imageUpload == null || imageUpload?.Length == 0)
+            {
+                return false;
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imgPath);
+
+            if (System.IO.File.Exists(path))
+            {
+                return false;
+            }
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await imageUpload.CopyToAsync(stream);
+            }
+            return true;
         }
     }
 }

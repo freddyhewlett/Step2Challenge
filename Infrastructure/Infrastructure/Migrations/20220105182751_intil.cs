@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Migrations
 {
-    public partial class initial : Migration
+    public partial class intil : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -157,7 +157,7 @@ namespace Infrastructure.Migrations
                     InsertDate = table.Column<DateTime>(nullable: false),
                     UpdateDate = table.Column<DateTime>(nullable: true),
                     ImagePath = table.Column<string>(nullable: true),
-                    ProductId = table.Column<Guid>(nullable: true)
+                    ProductId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,7 +167,7 @@ namespace Infrastructure.Migrations
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

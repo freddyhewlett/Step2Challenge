@@ -7,17 +7,17 @@ namespace Domain.Models.Products
 {
     public class Product : Entity
     {        
-        public string Name { get; set; }
-        public Category Category { get; set; }
-        public Guid CategoryId { get; set; }
-        public ICollection<Image> Image { get; set ; } = new List<Image>();
-        public string BarCode { get; set; }
-        public int QuantityStock { get; set; }
-        public bool Active { get; set; }
-        public decimal PriceSales { get; set; }
-        public decimal PricePurchase { get; set; }
-        public Supplier Supplier { get; set; }
-        public Guid SupplierId { get; set; }
+        public string Name { get; private set; }
+        public Category Category { get; private set; }
+        public Guid CategoryId { get; private set; }
+        public ICollection<Image> Images { get; private set; } = new List<Image>();
+        public string BarCode { get; private set; }
+        public int QuantityStock { get; private set; }
+        public bool Active { get; private set; }
+        public decimal PriceSales { get; private set; }
+        public decimal PricePurchase { get; private set; }
+        public Supplier Supplier { get; private set; }
+        public Guid SupplierId { get; private set; }
 
         protected Product() 
         {            
@@ -25,35 +25,63 @@ namespace Domain.Models.Products
 
         public Product(Guid idCategory, List<Image> images, Guid idSupplier, string name, string barCode, int qtyStock, bool active, decimal sale, decimal purchase)
         {
+            SupplierId = idSupplier;
             CategoryId = idCategory;
 
             foreach (var item in images)
             {
                 SetImagePath(item.ImagePath);
             }
-            if (Image.Count < 1) throw new Exception("Imagem obrigatória");
+            if (Images.Count < 1) throw new Exception("Imagem obrigatória");
 
-            Name = name;
-            BarCode = barCode;
-            QuantityStock = qtyStock;
-            Active = active;
-            PriceSales = sale;
-            PricePurchase = purchase;
-            SupplierId = idSupplier;
+            SetName(name);
+            SetBarCode(barCode);
+            SetQuantityStock(qtyStock);
+            SetActive(active);
+            SetPriceSales(sale);
+            SetPricePurchase(purchase);
         }
 
         public void SetImagePath(string imagePath)
         {            
 
-            if (Image.Count >= 5)
+            if (Images.Count >= 5)
             {
-                //TODO retornar erro
+                throw new Exception("Numero maximo de imagens atingido");
             }
 
-            Image.Add(new Image(imagePath));
+            Images.Add(new Image(Id, imagePath));
 
         }
 
+        public void SetName(string name)
+        {
+            Name = name;
+        }
 
+        public void SetBarCode(string barCode)
+        {
+            BarCode = barCode;
+        }
+
+        public void SetQuantityStock(int stock)
+        {
+            QuantityStock = stock;
+        }
+
+        public void SetPriceSales(decimal sales)
+        {
+            PriceSales = sales;
+        }
+
+        public void SetPricePurchase(decimal purchase)
+        {
+            PricePurchase = purchase;
+        }
+
+        public void SetActive (bool active)
+        {
+            Active = active;
+        }
     }
 }

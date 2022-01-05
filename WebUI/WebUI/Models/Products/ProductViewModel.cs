@@ -14,7 +14,7 @@ namespace WebUI.Models.Products
         public string Name { get; set; }
         public CategoryViewModel Category { get; set; }
         public Guid CategoryId { get; set; }
-        public ICollection<ImageViewModel> Image { get; set; } = new List<ImageViewModel>();
+        public ICollection<ImageViewModel> Images { get; set; } = new List<ImageViewModel>();
 
         [Required]
         public string BarCode { get; set; }
@@ -32,6 +32,12 @@ namespace WebUI.Models.Products
         public decimal PricePurchase { get; set; }
         public SupplierViewModel Supplier { get; set; }
         public Guid SupplierId { get; set; }
-        public IFormFile ImageUpload { get; set; }
+        public ICollection<IFormFile> ImagesUpload { get; set; } = new List<IFormFile>();
+
+
+        public IEnumerable<CategoryViewModel> Categories { get; set; }
+
+        public IEnumerable<SupplierViewModel> Suppliers { get; set; }
+        
     }
 }
