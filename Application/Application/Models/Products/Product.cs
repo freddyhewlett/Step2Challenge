@@ -25,9 +25,6 @@ namespace Domain.Models.Products
 
         public Product(Guid idCategory, List<Image> images, Guid idSupplier, string name, string barCode, int qtyStock, bool active, decimal sale, decimal purchase)
         {
-            SupplierId = idSupplier;
-            CategoryId = idCategory;
-
             foreach (var item in images)
             {
                 SetImagePath(item.ImagePath);
@@ -40,6 +37,18 @@ namespace Domain.Models.Products
             SetActive(active);
             SetPriceSales(sale);
             SetPricePurchase(purchase);
+            SetSupplierId(idSupplier);
+            SetCategoryId(idCategory);
+        }
+
+        public void SetCategoryId(Guid idCategory)
+        {
+            CategoryId = idCategory;
+        }
+
+        public void SetSupplierId(Guid idSupplier)
+        {
+            SupplierId = idSupplier;
         }
 
         public void SetImagePath(string imagePath)
@@ -82,6 +91,16 @@ namespace Domain.Models.Products
         public void SetActive (bool active)
         {
             Active = active;
+        }
+
+        public void SetImage(Image image)
+        {
+            if (Images.Count >= 5)
+            {
+                throw new Exception("Quantidade limite de imagens atingida");
+            }
+
+            Images.Add(image);
         }
     }
 }

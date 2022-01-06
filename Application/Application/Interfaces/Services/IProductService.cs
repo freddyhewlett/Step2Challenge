@@ -18,10 +18,14 @@ namespace Domain.Interfaces.Services
         Task<IEnumerable<Category>> ListCategories();
         Task<List<Product>> SortFilter(string sortOrder);
         IQueryable<Product> SearchString(string search, Guid? selectedCategory);
-        Task<string> FindImagePath(Guid id);
+        Task<string> FindImagePathByImageId(Guid id);
+        Task<string> FindImagePathByProductId(Guid id);
         Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers();
         Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers();
         Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy();
+        Task RemoveImage(Image image);
+        Task<Product> FindProductByImageId(Guid id);
+        Task<Image> FindImageById(Guid id);
         //Task InsertImage();
         //Task UpdateImage();
         //Task RemoveImage();

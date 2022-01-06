@@ -128,12 +128,33 @@ namespace Infrastructure.Repositories
             return all;
         }
 
-        public async Task<string> FindImagePath(Guid id)
+        public async Task<string> FindImagePathByImageId(Guid id)
         {
             var imageList = await _context.Images.AsNoTracking().ToListAsync();
-            var image = imageList.Find(x => x.Id == id);
+            var image = imageList.Find(x => x.ImagePath != null && x.Id == id);
             var path = image.ImagePath;
             return path;
+        }
+
+        public async Task<string> FindImagePathByProductId(Guid id)
+        {
+            var product = _context.Products.Where(x => x.Id == id).Include(x => x.Images).AsNoTracking().FirstOrDefault();
+            var imageList = await _context.Images.Where(x => x.ProductId == product.Id).Include(x => x.Product).AsNoTracking().ToListAsync();
+            var image = imageList.Find(x => x.ImagePath != null && x.ProductId == product.Id);
+            var path = image.ImagePath;
+            return path;
+        }
+
+        public async Task<Product> FindProductByImageId(Guid id)
+        {
+            var image = _context.Images.Where(x => x.Id == id).Include(x => x.Product).AsNoTracking().FirstOrDefault();
+            var product = _context.Products.Where(x => x.Images.Contains(image)).Include(x => x.Images).AsNoTracking().FirstOrDefault();
+            return product;
+        }
+
+        public async Task<Image> FindImageById(Guid id)
+        {
+            return await _context.Images.Where(x => x.Id == id).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<Product> FindById(Guid id)

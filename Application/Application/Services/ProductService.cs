@@ -46,6 +46,12 @@ namespace Domain.Services
                 return;
             }
 
+            if (product.Images.Count < 1 || product.Images.Count > 5)
+            {
+                _notifierService.AddError("Produto deve ter minimo 1 e maximo 5 imagens");
+                return;
+            }
+
             await _productRepository.Insert(product);
             await _productRepository.SaveChanges();
         }
@@ -61,11 +67,45 @@ namespace Domain.Services
 
         public async Task Update(Product product)
         {
-
+            //TODO Fluent Validation (classe) para imagem
             if (_notifierService.HasError()) return;
 
-            await _productRepository.Update(product);
+            var result = await _productRepository.FindById(product.Id);
+
+            if (result == null)
+            {
+                _notifierService.AddError("Produto não encontrado");
+            }
+
+            result.SetName(product.Name);
+            result.SetActive(product.Active);
+            result.SetBarCode(product.BarCode);
+            result.SetPricePurchase(product.PricePurchase);
+            result.SetPriceSales(product.PriceSales);
+            result.SetQuantityStock(product.QuantityStock);
+            result.SetSupplierId(product.SupplierId);
+            result.SetCategoryId(product.CategoryId);
+            if (product.Images.Count > 0 && product.Images.Count <= 5)
+            {
+                foreach (var item in result.Images)
+                {
+                    if (product.Images.Where(x => x.Id == item.Id).FirstOrDefault() != null)
+                        continue;
+                }
+                foreach (var item in product.Images)
+                {
+                    if (result.Images.Where(x => x.Id == item.Id).FirstOrDefault() != null)
+                        continue;
+                    else
+                        result.SetImage(item);
+                    await _productRepository.InsertImage(item);
+                }
+            }
+            
+
+            await _productRepository.Update(result);
             await _productRepository.SaveChanges();
+            await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Category>> ListCategories()
@@ -101,9 +141,30 @@ namespace Domain.Services
             return products;
         }
 
-        public async Task<string> FindImagePath(Guid id)
+        public async Task<string> FindImagePathByImageId(Guid id)
         {
-            return await _productRepository.FindImagePath(id);
+            return await _productRepository.FindImagePathByImageId(id);
+        }
+
+        public async Task<string> FindImagePathByProductId(Guid id)
+        {
+            return await _productRepository.FindImagePathByProductId(id);
+        }
+
+        public async Task<Product> FindProductByImageId(Guid id)
+        {
+            return await _productRepository.FindProductByImageId(id);
+        }
+
+        public async Task<Image> FindImageById(Guid id)
+        {
+            return await _productRepository.FindImageById(id);
+        }
+
+        public async Task RemoveImage(Image image)
+        {
+            await _productRepository.RemoveImage(image);
+            await _productRepository.SaveChanges();
         }
 
         //public async Task InsertImage()
@@ -116,9 +177,6 @@ namespace Domain.Services
         //    //TODO
         //}
 
-        //public async Task RemoveImage()
-        //{
-        //    //TODO
-        //}
+
     }
 }

@@ -19,7 +19,8 @@ namespace Domain.Interfaces.Repositories
         IQueryable<Product> SearchString(string search, Guid? selectedCategory);
         Task<List<Product>> SortProductFilter(string sortOrder);
         Task<IEnumerable<Category>> ListCategories();
-        Task<string> FindImagePath(Guid id);
+        Task<string> FindImagePathByImageId(Guid id);
+        Task<string> FindImagePathByProductId(Guid id);
         Task<int> SaveChanges();
         Task<Product> FindById(Guid id);
         Task InsertImage(Image image);
@@ -28,5 +29,7 @@ namespace Domain.Interfaces.Repositories
         Task<IEnumerable<SupplierJuridical>> ListJuridicalSuppliers();
         Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers();
         Task<IEnumerable<Supplier>> ListAllSuppliersIdFantasy();
+        Task<Product> FindProductByImageId(Guid id);
+        Task<Image> FindImageById(Guid id);
     }
 }

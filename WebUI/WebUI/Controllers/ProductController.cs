@@ -2,6 +2,7 @@
 using Domain.Interfaces.Services;
 using Domain.Models.Products;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,11 +23,13 @@ namespace WebUI.Controllers
     public class ProductController : MainController
     {
         private readonly IProductService _productService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ProductController(IMapper mapper, IProductService productService, INotifierService notifier)
+        public ProductController(IMapper mapper, IProductService productService, INotifierService notifier, IHostingEnvironment hostingEnvironment)
                                     : base(mapper, notifier)
         {
             _productService = productService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: ProductController
@@ -102,9 +105,9 @@ namespace WebUI.Controllers
                     {
                         newProduct.Images.Add(SetNewImagePath(path));
                     }
-                }                
+                }
             }
-                     
+
             await _productService.Insert(_mapper.Map<Product>(newProduct));
 
             if (!ValidOperation())
@@ -125,6 +128,10 @@ namespace WebUI.Controllers
             }
 
             var productViewModel = _mapper.Map<ProductViewModel>(product);
+            await MappingListCategories(productViewModel);
+
+            ViewBag.CategoryId = new SelectList(productViewModel.Categories, "Id", "Name", product.CategoryId);
+            ViewBag.SupplierId = new SelectList(productViewModel.Suppliers, "Id", "FantasyName", product.SupplierId);
             return View(productViewModel);
         }
 
@@ -133,35 +140,29 @@ namespace WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditConfirmed(ProductViewModel productViewModel)
         {
-            if (!ModelState.IsValid) return View(productViewModel);
+            if (!ModelState.IsValid) return View(await MappingListCategories(productViewModel));
 
-            if (productViewModel.ImagesUpload.Count > 1)
+            if (productViewModel.ImagesUpload != null && productViewModel.ImagesUpload.Count > 0 && productViewModel.ImagesUpload.Count <= 5)
             {
+                string path = string.Empty;
+
                 foreach (var item in productViewModel.ImagesUpload)
                 {
-                    string path = string.Empty;
-                    var productString = await _productService.FindImagePath(productViewModel.Id);
-                    if (productString != null)
-                    {
-                        var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", productString);
-                        if (System.IO.File.Exists(oldPath))
-                        {
-                            System.IO.File.Delete(oldPath);
-                        }
-                    }
-                    path = Guid.NewGuid().ToString() + Path.GetExtension(item.FileName);
+                    var upload = Path.Combine(_hostingEnvironment.WebRootPath, "images");                    
+                    path = Guid.NewGuid().ToString() + Path.GetExtension(item?.FileName);
+                    var filePath = Path.Combine(upload, path);
 
-                    if (UpdateFile(item, path).Result)
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        var addImage = productViewModel.Images.Where(x => x.ImagePath == null).FirstOrDefault();
-                        addImage.ImagePath = path;
-                        productViewModel.Images.Add(addImage);
+                        await item.CopyToAsync(stream);
                     }
+
+                    productViewModel.Images.Add(new ImageViewModel(path));
                 }
-                
             }
+            var product = _mapper.Map<Product>(productViewModel);
 
-            await _productService.Update(_mapper.Map<Product>(productViewModel));
+            await _productService.Update(product);
 
             if (!ValidOperation())
             {
@@ -169,6 +170,28 @@ namespace WebUI.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RemovePicture(Guid id)
+        {
+            var result = await _productService.FindImagePathByImageId(id);
+            var image = await _productService.FindImageById(id);
+
+            if (result != null)
+            {
+                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", result);
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+            }
+
+
+            await _productService.RemoveImage(image);
+
+
+            return RedirectToAction(nameof(Edit), new { Id = image.ProductId });
         }
 
         [HttpGet]
@@ -196,11 +219,17 @@ namespace WebUI.Controllers
                 {
                     foreach (var item in viewModel.Images)
                     {
-                        if (System.IO.File.Exists(item.ImagePath))
+                        string path = string.Empty;
+                        var productString = await _productService.FindImagePathByProductId(viewModel.Id);
+                        if (productString != null)
                         {
-                            System.IO.File.Delete(item.ImagePath);
+                            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", productString);
+                            if (System.IO.File.Exists(oldPath))
+                            {
+                                System.IO.File.Delete(oldPath);
+                            }
                         }
-                    }                    
+                    }
                 }
             }
             await _productService.Remove(id);
@@ -247,19 +276,13 @@ namespace WebUI.Controllers
 
         private async Task<ProductViewModel> MappingListSuppliers(ProductViewModel viewModel)
         {
-            //var physical = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListPhysicalSuppliers());
-            //viewModel.Suppliers = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListJuridicalSuppliers());
-            //foreach (var item in physical)
-            //{
-            //    viewModel.Suppliers.Append(item);
-            //}
             viewModel.Suppliers = _mapper.Map<IEnumerable<SupplierViewModel>>(await _productService.ListAllSuppliersIdFantasy());
             return viewModel;
         }
 
         private static ImageViewModel SetNewImagePath(string path)
         {
-            ImageViewModel imageViewModel = new ImageViewModel(); 
+            ImageViewModel imageViewModel = new ImageViewModel();
             imageViewModel.ImagePath = path;
             return imageViewModel;
         }

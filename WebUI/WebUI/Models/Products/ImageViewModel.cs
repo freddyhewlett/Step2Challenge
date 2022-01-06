@@ -10,5 +10,15 @@ namespace WebUI.Models.Products
     {
         [Required]
         public string ImagePath { get; set; }
+        public ProductViewModel ProductViewmodel { get; private set; }
+        public Guid ProductViewModelId { get; private set; }
+
+
+        public ImageViewModel() { }
+
+        public ImageViewModel(string path) 
+        {
+            ImagePath = path;
+        }
     }
 }

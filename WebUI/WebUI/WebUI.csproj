@@ -7,7 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\images\09bb0e51-ee80-45a6-b340-baf2554aff01.jpg" />
+    <Content Remove="wwwroot\images\0fc195f1-6285-4ddb-96a8-947597a443ad.jpg" />
+    <Content Remove="wwwroot\images\2bab2222-51d5-4316-9755-a841e6a765a4.jpg" />
+    <Content Remove="wwwroot\images\32326a44-eaa3-44fd-96a3-7278ce89c234.jfif" />
+    <Content Remove="wwwroot\images\3ad3846f-1616-4540-bc33-1817089b3c36.jfif" />
     <Content Remove="wwwroot\images\4d88b0af-1cd1-427d-bd98-304c30471c3d.jfif" />
+    <Content Remove="wwwroot\images\64088cd6-7167-4044-9a35-4512df749514.jpg" />
+    <Content Remove="wwwroot\images\678142e3-f525-4871-bdff-123e1d24f4bb.jpg" />
+    <Content Remove="wwwroot\images\6cde3e95-8ca2-4ddd-870d-0ba3e547db6b.jpg" />
+    <Content Remove="wwwroot\images\7b1dfc8c-8cd7-4843-807b-9ad1d49b8dd0.jpg" />
+    <Content Remove="wwwroot\images\7ba869fc-36fc-4587-9e85-50fee4cbd175.jfif" />
+    <Content Remove="wwwroot\images\adc3d468-7f18-4791-8e20-67d3573c8891.jpg" />
+    <Content Remove="wwwroot\images\b0230c26-624c-4adc-a5a4-6e54edabbb0b.jfif" />
+    <Content Remove="wwwroot\images\bc425d5a-459e-4084-81df-13cfe93df1e2.jpg" />
+    <Content Remove="wwwroot\images\d0369f56-0b66-4705-8d53-92d1447c902d.jpg" />
+    <Content Remove="wwwroot\images\d963842f-1355-4cc6-93b6-4656150d0366.jfif" />
+    <Content Remove="wwwroot\images\f870f8e6-8aa5-4ca7-9654-68c3f1094857.jpg" />
+    <Content Remove="wwwroot\images\fee43b93-558e-4027-8f1a-36366afd504d.jfif" />
   </ItemGroup>
 
   <ItemGroup>
