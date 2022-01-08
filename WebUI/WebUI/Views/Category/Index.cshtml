@@ -1,10 +1,11 @@
-﻿@model WebUI.Utilities.PaginatedList<ProductViewModel>
+﻿@model WebUI.Utilities.PaginatedList<CategoryViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -15,8 +16,6 @@
         <p>
             Find by Name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
             <input type="submit" value="Search" class="btn btn-dark" />
-            Select Genre: @Html.DropDownList("SelectedCategory", "All")
-            <input type="submit" value="Filter" class="btn btn-dark" />|
             <a asp-action="Index">Back to Full List</a>
         </p>
     </div>
@@ -26,34 +25,16 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Nome</a>
-            </th>
-            <th>
-                Categoria
-            </th>
-            <th>
-                Código de Barras
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["QuantitySortParm"]">Quantity</a>
-            </th>
-            <th>
                 Ativo
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSalesSortParm"]">Preço de venda</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Nome</a>
             </th>
             <th>
-                Preço de Compra
+                Data de inserção
             </th>
             <th>
-                Fornecedor
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">Data de inserção</a>
-            </th>
-            <th>
-                Data de Modificação
+                Data de modificação
             </th>
             <th></th>
         </tr>
@@ -63,28 +44,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BarCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.QuantityStock)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Active)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PriceSales)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PricePurchase)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Supplier.FantasyName)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.InsertDate)

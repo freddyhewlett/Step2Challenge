@@ -1,6 +1,8 @@
-﻿using Domain.Models.Products;
+﻿using Domain.Models;
+using Domain.Models.Products;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,5 +20,9 @@ namespace Domain.Interfaces.Repositories
         Task Update(Category category);
         Task<int> SaveChanges();
         Task<Category> FindById(Guid id);
+        Task<IEnumerable<Product>> ListProducts();
+        IQueryable<Category> SearchString(string search);
+        Task<List<Category>> SortCategoryFilter(string sortOrder);
+        Task<PaginationViewModel<Category>> Pagination(int pageSize, int pageIndex, string query);
     }
 }

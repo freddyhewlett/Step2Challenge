@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SupplierPhysicalViewModel>
+﻿@model WebUI.Utilities.PaginatedList<SupplierPhysicalViewModel>
 
 @{
     ViewData["Title"] = "IndexPhysical";
@@ -9,69 +9,108 @@
 <p>
     <a asp-action="CreatePhysical">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cpf)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BirthDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Active)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FantasyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InsertDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cpf)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BirthDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Active)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FantasyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email.EmailAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateDate)
-            </td>
-            <td>
-                <a asp-action="EditPhysical" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="DetailsPhysical" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="DeletePhysical" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<form asp-action="IndexPhysical" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by Name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-dark" />
+            <a asp-action="IndexPhysical">Back to Full List</a>
+        </p>
+    </div>
+</form>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="IndexPhysical" asp-route-sortOrder="@ViewData["NameSortParm"]">Nome Completo</a>
+                </th>
+                <th>
+                    CPF
+                </th>
+                <th>
+                    Data de aniversario
+                </th>
+                <th>
+                    Ativo
+                </th>
+                <th>
+                    Nome Fantasia
+                </th>
+                <th>
+                    E-mail
+                </th>
+                <th>
+                    <a asp-action="IndexPhysical" asp-route-sortOrder="@ViewData["DateSortParm"]">Data de inserção</a>
+                </th>
+                <th>
+                    Data de atualização
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cpf)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BirthDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Active)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FantasyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email.EmailAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsertDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateDate)
+                    </td>
+                    <td>
+                        <a asp-action="EditPhysical" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="DetailsPhysical" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="DeletePhysical" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="IndexPhysical"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="IndexPhysical"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+
+    <a asp-action="ExportPhysicalSupplierXlsx" asp-controller="Supplier" class="btn btn-danger" title="Excel">
+        <span class="fas fa-edit">Gerar relatório (Pessoa Fisica)</span>
+    </a>
+</div>
+

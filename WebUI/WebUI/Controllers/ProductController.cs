@@ -44,6 +44,8 @@ namespace WebUI.Controllers
             var categoryViewModel = _mapper.Map<IEnumerable<CategoryViewModel>>(await _productService.ListCategories());
             ViewBag.SelectedCategory = new SelectList(categoryViewModel, "Id", "Name", SelectedCategory);
 
+            int pageSize = 5;
+
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -55,14 +57,22 @@ namespace WebUI.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                var movieSearch = _mapper.Map<IEnumerable<ProductViewModel>>(_productService.SearchString(searchString, SelectedCategory));
-                return View(movieSearch);
+                var productSearch = _mapper.Map<List<ProductViewModel>>(_productService.SearchString(searchString, SelectedCategory));
+                int count = 0;
+
+                foreach (var item in productSearch)
+                {
+                    count++;
+                }
+
+                PaginatedList<ProductViewModel> search = new PaginatedList<ProductViewModel>(productSearch, count, pageNumber ?? 1, pageSize);
+                return View(search);
             }
 
             var sort = await _productService.SortFilter(sortOrder);
             var result = _mapper.Map<List<ProductViewModel>>(sort);
 
-            int pageSize = 5;
+
 
             return View(await PaginatedList<ProductViewModel>.CreateAsync(result, pageNumber ?? 1, pageSize));
         }
@@ -148,7 +158,7 @@ namespace WebUI.Controllers
 
                 foreach (var item in productViewModel.ImagesUpload)
                 {
-                    var upload = Path.Combine(_hostingEnvironment.WebRootPath, "images");                    
+                    var upload = Path.Combine(_hostingEnvironment.WebRootPath, "images");
                     path = Guid.NewGuid().ToString() + Path.GetExtension(item?.FileName);
                     var filePath = Path.Combine(upload, path);
 

@@ -14,9 +14,15 @@ namespace WebUI.Models.Suppliers
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "O {0} é obrigatório")]
-        [StringLength(255, MinimumLength = 5, ErrorMessage = "{0} deve ter entre 5 e 255 caracteres")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "{0} deve ter 11 numeros")]
         [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} deve conter apenas numeros")]
+        [Display(Name = "CPF")]
         public string Cpf { get; set; }
+
+        [Required]
+        [Display(Name = "Data de nascimento")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
     }
 }

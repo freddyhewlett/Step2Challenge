@@ -17,8 +17,12 @@ namespace WebUI.Models.Suppliers
         [StringLength(255, MinimumLength = 5, ErrorMessage = "{0} deve ter entre 5 e 255 caracteres")]
         [Display(Name ="Nome Fantasia")]
         public string FantasyName { get; set; }
+
+        [Display(Name = "Endereço")]
         public AddressViewModel Address { get; set; }
         public Guid AddressId { get; set; }
+
+        [Display(Name = "E-mail")]
         public EmailViewModel Email { get; set; }
         public Guid EmailId { get; set; }
         
@@ -36,7 +40,7 @@ namespace WebUI.Models.Suppliers
         [Display(Name = "Telefone Empresarial")]
         public string OfficePhone { get; set; }
         public PhoneType PhoneType { get; set; }
-        public IEnumerable<ProductViewModel> Products { get; set; }
+        public ICollection<ProductViewModel> Products { get; set; }
         public ICollection<PhoneViewModel> Phones { get; set; } = new List<PhoneViewModel>();
     }
 }

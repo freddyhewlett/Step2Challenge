@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Services;
+using Domain.Models;
 using Domain.Models.Suppliers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebUI.Configuration;
@@ -20,26 +23,92 @@ namespace WebUI.Controllers
     public class SupplierController : MainController
     {
         private readonly ISupplierService _supplierService;
+        private readonly IProductService _productService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public SupplierController(IMapper mapper, ISupplierService supplierService, INotifierService notifier)
+        public SupplierController(IHostingEnvironment hostingEnvironment, IMapper mapper, ISupplierService supplierService, INotifierService notifier, IProductService productService)
                                     : base(mapper, notifier)
         {
             _supplierService = supplierService;
+            _productService = productService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: SupplierController
-        public async Task<IActionResult> IndexPhysical()
+        public async Task<IActionResult> IndexPhysical(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
-            var supplier = _mapper.Map<IEnumerable<SupplierPhysicalViewModel>>(await _supplierService.PhysicalAll());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;            
 
-            return View(supplier);
+            int pageSize = 5;
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var productSearch = _mapper.Map<List<SupplierPhysicalViewModel>>(_supplierService.SearchPhysical(searchString));
+                int count = 0;
+
+                foreach (var item in productSearch)
+                {
+                    count++;
+                }
+
+                PaginatedList<SupplierPhysicalViewModel> search = new PaginatedList<SupplierPhysicalViewModel>(productSearch, count, pageNumber ?? 1, pageSize);
+                return View(search);
+            }
+
+            var sort = await _supplierService.SortPhysicalFilter(sortOrder);
+            var result = _mapper.Map<List<SupplierPhysicalViewModel>>(sort);
+
+            return View(await PaginatedList<SupplierPhysicalViewModel>.CreateAsync(result, pageNumber ?? 1, pageSize));
         }
 
-        public async Task<IActionResult> IndexJuridical()
+        public async Task<IActionResult> IndexJuridical(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
-            var supplier = _mapper.Map<IEnumerable<SupplierJuridicalViewModel>>(await _supplierService.JuridicalAll());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
 
-            return View(supplier);
+            int pageSize = 5;
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var productSearch = _mapper.Map<List<SupplierJuridicalViewModel>>(_supplierService.SearchJuridical(searchString));
+                int count = 0;
+
+                foreach (var item in productSearch)
+                {
+                    count++;
+                }
+
+                PaginatedList<SupplierJuridicalViewModel> search = new PaginatedList<SupplierJuridicalViewModel>(productSearch, count, pageNumber ?? 1, pageSize);
+                return View(search);
+            }
+
+            var sort = await _supplierService.SortJuridicalFilter(sortOrder);
+            var result = _mapper.Map<List<SupplierJuridicalViewModel>>(sort);
+
+            return View(await PaginatedList<SupplierJuridicalViewModel>.CreateAsync(result, pageNumber ?? 1, pageSize));
         }
 
         [HttpGet]
@@ -276,6 +345,66 @@ namespace WebUI.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public async Task<FileContentResult> ExportPhysicalSupplierXlsx()
+        {
+            var physicalsuppliersList = await _supplierService.PhysicalAll();
+            var productsList = await _productService.ProductsAll();
+
+            foreach (var supplier in physicalsuppliersList)
+            {
+                foreach (var product in productsList)
+                {
+                    if (supplier.Id == product.SupplierId)
+                    {
+                        supplier.Products.Add(product);
+                    }
+                }
+            }
+
+
+            var listPhysicalModel = _mapper.Map<IEnumerable<SupplierViewModel>>(physicalsuppliersList);
+
+            var uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "excel");
+            var fileName = Guid.NewGuid().ToString() + "_RelatorioPessoaFisica.xlsx";
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            ExcelFile.Create(filePath, listPhysicalModel);
+
+            byte[] excel = System.IO.File.ReadAllBytes(filePath);
+
+            return new FileContentResult(excel, $"{filePath}");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportJuridicalSupplierXlsx()
+        {
+            var juridicalsuppliersList = await _supplierService.JuridicalAll();
+            var productsList = await _productService.ProductsAll();
+
+            foreach (var supplier in juridicalsuppliersList)
+            {
+                foreach (var product in productsList)
+                {
+                    if (supplier.Id == product.SupplierId)
+                    {
+                        supplier.Products.Add(product);
+                    }
+                }
+            }
+
+
+            var listPhysicalModel = _mapper.Map<IEnumerable<SupplierViewModel>>(juridicalsuppliersList);
+
+            var uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "excel");
+            var fileName = Guid.NewGuid().ToString() + "_RelatorioPessoaJuridica.xlsx";
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            ExcelFile.Create(filePath, listPhysicalModel);
+
+            return RedirectToAction(nameof(IndexPhysical));
         }
     }
 }

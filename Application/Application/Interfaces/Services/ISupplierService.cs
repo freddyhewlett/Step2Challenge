@@ -1,4 +1,5 @@
-﻿using Domain.Models.Products;
+﻿using Domain.Models;
+using Domain.Models.Products;
 using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,9 @@ namespace Domain.Interfaces.Services
         Task UpdatePhysical(SupplierPhysical supplier);
         Task UpdateJuridical(SupplierJuridical supplier);
         IQueryable<SupplierPhysical> SearchPhysical(string search);
+        Task<List<SupplierPhysical>> SortPhysicalFilter(string sortOrder);
         IQueryable<SupplierJuridical> SearchJuridical(string search);
+        Task<List<SupplierJuridical>> SortJuridicalFilter(string sortOrder);
         Task InsertPhone(Phone phone);
         Task RemovePhone(Phone phone);
         Task UpdatePhone(Phone phone);
@@ -31,5 +34,7 @@ namespace Domain.Interfaces.Services
         Task UpdateEmail(Email email);
         Task InsertEmail(Email email);
         Task InsertAddress(Address adress);
+        Task<PaginationViewModel<SupplierPhysical>> PaginationPhysical(int PageSize, int PageIndex, string query);
+        Task<PaginationViewModel<SupplierJuridical>> PaginationJuridical(int PageSize, int PageIndex, string query);
     }
 }

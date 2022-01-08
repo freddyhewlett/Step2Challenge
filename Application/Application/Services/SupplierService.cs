@@ -323,11 +323,23 @@ namespace Domain.Services
             return supplier;
         }
 
+        public async Task<List<SupplierPhysical>> SortPhysicalFilter(string sortOrder)
+        {
+            var sort = await _supplierRepository.SortPhysicalFilter(sortOrder);
+            return sort;
+        }
+
         public IQueryable<SupplierJuridical> SearchJuridical(string search)
         {
             var supplier = _supplierRepository.SearchJuridicalString(search);
 
             return supplier;
+        }
+
+        public async Task<List<SupplierJuridical>> SortJuridicalFilter(string sortOrder)
+        {
+            var sort = await _supplierRepository.SortJuridicalFilter(sortOrder);
+            return sort;
         }
 
         public async Task InsertPhone(Phone phone)
@@ -384,6 +396,16 @@ namespace Domain.Services
             }
 
             return false;
+        }
+
+        public async Task<PaginationViewModel<SupplierPhysical>> PaginationPhysical(int PageSize, int PageIndex, string query)
+        {
+            return await _supplierRepository.PaginationPhysical(PageSize, PageIndex, query);
+        }
+
+        public async Task<PaginationViewModel<SupplierJuridical>> PaginationJuridical(int PageSize, int PageIndex, string query)
+        {
+            return await _supplierRepository.PaginationJuridical(PageSize, PageIndex, query);
         }
     }
 }

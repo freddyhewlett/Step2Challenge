@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SupplierJuridicalViewModel>
+﻿@model WebUI.Utilities.PaginatedList<SupplierJuridicalViewModel>
 
 @{
     ViewData["Title"] = "IndexJuridical";
@@ -6,78 +6,112 @@
 
 <h1>IndexJuridical</h1>
 
+<vc:pagination model-pagination="@Model"></vc:pagination>
+
 <p>
     <a asp-action="CreateJuridical">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CompanyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cnpj)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OpenDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Active)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FantasyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InsertDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompanyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cnpj)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OpenDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Active)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FantasyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address.Street)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email.EmailAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateDate)
-            </td>
-            <td>
-                <a asp-action="EditJuridical" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="DetailsJuridical" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="DeleteJuridical" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<form asp-action="IndexJuridical" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by Name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-dark" />
+            <a asp-action="IndexJuridical">Back to Full List</a>
+        </p>
+    </div>
+</form>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="IndexJuridical" asp-route-sortOrder="@ViewData["NameSortParm"]">Razão Social</a>
+                </th>
+                <th>
+                    CNPJ
+                </th>
+                <th>
+                    Data fundação
+                </th>
+                <th>
+                    Ativo
+                </th>
+                <th>
+                    Nome Fantasia
+                </th>
+                <th>
+                    E-mail
+                </th>
+                <th>
+                    <a asp-action="IndexJuridical" asp-route-sortOrder="@ViewData["DateSortParm"]">Data de inserção</a>
+                </th>
+                <th>
+                    Data de modificação
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CompanyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cnpj)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OpenDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Active)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FantasyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email.EmailAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsertDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateDate)
+                    </td>
+                    <td>
+                        <a asp-action="EditJuridical" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="DetailsJuridical" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="DeleteJuridical" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="IndexJuridical"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="IndexJuridical"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+
+    <a asp-action="ExportPhysicalSupplierXlsx" asp-controller="Supplier" class="btn btn-danger" title="Excel">
+        <span class="fas fa-edit">Gerar relatório (Pessoa Juridica)</span>
+    </a>
+</div>

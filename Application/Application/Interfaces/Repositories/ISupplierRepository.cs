@@ -1,4 +1,5 @@
-﻿using Domain.Models.Products;
+﻿using Domain.Models;
+using Domain.Models.Products;
 using Domain.Models.Suppliers;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,9 @@ namespace Domain.Interfaces.Repositories
         Task<IEnumerable<SupplierPhysical>> ToListPhysical();
         Task<IEnumerable<SupplierJuridical>> ToListJuridical();
         IQueryable<SupplierPhysical> SearchPhysicalString(string search);
+        Task<List<SupplierJuridical>> SortJuridicalFilter(string sortOrder);
         IQueryable<SupplierJuridical> SearchJuridicalString(string search);
+        Task<List<SupplierPhysical>> SortPhysicalFilter(string sortOrder);
         Task<SupplierPhysical> FindPhysicalById(Guid id);
         Task<SupplierJuridical> FindJuridicalById(Guid id);
         Task<IEnumerable<Product>> ProductListByPhysical(Guid id);
@@ -35,5 +38,7 @@ namespace Domain.Interfaces.Repositories
         Task<int> SaveChanges();
         Task InsertAddress(Address address);
         Task InsertEmail(Email email);
+        Task<PaginationViewModel<SupplierPhysical>> PaginationPhysical(int pageSize, int pageIndex, string query);
+        Task<PaginationViewModel<SupplierJuridical>> PaginationJuridical(int pageSize, int pageIndex, string query);
     }
 }

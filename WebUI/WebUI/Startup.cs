@@ -7,6 +7,7 @@ using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Globalization;
 using WebUI.Configuration;
+using WebUI.Data;
 
 namespace WebUI
 {
@@ -40,21 +42,24 @@ namespace WebUI
             services.AddScoped<INotifierService, NotifierService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISupplierService, SupplierService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<RegisterDbContext>();
+            services.AddScoped<WebUIContext>();
             services.AddScoped<SeedConfig>();
 
 
-            //Authentication
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
-            {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
 
-                options.LoginPath = "/Entrar";
-                options.AccessDeniedPath = "/Erro/403";
-                options.SlidingExpiration = true;
-            });
+            //Authentication
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            //{
+            //    // Cookie settings
+            //    options.Cookie.HttpOnly = true;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+
+            //    options.LoginPath = "/Entrar";
+            //    options.AccessDeniedPath = "/Erro/403";
+            //    options.SlidingExpiration = true;
+            //});
 
             
 
@@ -63,12 +68,11 @@ namespace WebUI
             services.AddAutoMapper(typeof(Startup));
 
             services.AddDbContext<RegisterDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RegisterDbConection")));
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //   .AddEntityFrameworkStores<WebUIContext>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedConfig seed)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedConfig seed, DbContextOptions<WebUIContext> identityDbContextOptions, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {

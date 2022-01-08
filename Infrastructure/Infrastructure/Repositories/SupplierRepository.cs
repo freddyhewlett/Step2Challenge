@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces.Repositories;
+using Domain.Models;
 using Domain.Models.Products;
 using Domain.Models.Suppliers;
 using Infrastructure.Data;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace Infrastructure.Repositories
 {
@@ -89,16 +91,65 @@ namespace Infrastructure.Repositories
 
         public IQueryable<SupplierPhysical> SearchPhysicalString(string search)
         {
-            var suppliers = _context.PhysicalSuppliers.Where(s => s.FullName.Contains(search) || s.FantasyName.Contains(search));
-            
+            var suppliers = _context.PhysicalSuppliers.Where(s => s.FullName.Contains(search) || s.FantasyName.Contains(search))
+                                                        .Include(x => x.Address)
+                                                        .Include(x => x.Email)
+                                                        .Include(x => x.Phones)
+                                                        .Include(x => x.Products);
             return suppliers;
+        }
+
+        public async Task<List<SupplierPhysical>> SortPhysicalFilter(string sortOrder)
+        {
+            var physicalSuppliers = from m in _context.PhysicalSuppliers select m;
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    physicalSuppliers = physicalSuppliers.OrderByDescending(m => m.FullName);
+                    break;
+                case "Date":
+                    physicalSuppliers = physicalSuppliers.OrderBy(m => m.InsertDate);
+                    break;
+                case "date_desc":
+                    physicalSuppliers = physicalSuppliers.OrderByDescending(m => m.InsertDate);
+                    break;
+                default:
+                    physicalSuppliers = physicalSuppliers.OrderBy(m => m.FullName);
+                    break;
+            }
+            return await physicalSuppliers.AsNoTracking().ToListAsync();
         }
 
         public IQueryable<SupplierJuridical> SearchJuridicalString(string search)
         {
-            var suppliers = _context.JuridicalSuppliers.Where(s => s.CompanyName.Contains(search) || s.FantasyName.Contains(search));
+            var suppliers = _context.JuridicalSuppliers.Where(s => s.CompanyName.Contains(search) || s.FantasyName.Contains(search))
+                                                        .Include(x => x.Address)
+                                                        .Include(x => x.Email)
+                                                        .Include(x => x.Phones)
+                                                        .Include(x => x.Products);
 
             return suppliers;
+        }
+
+        public async Task<List<SupplierJuridical>> SortJuridicalFilter(string sortOrder)
+        {
+            var juridicalSuppliers = from m in _context.JuridicalSuppliers select m;
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    juridicalSuppliers = juridicalSuppliers.OrderByDescending(m => m.CompanyName);
+                    break;
+                case "Date":
+                    juridicalSuppliers = juridicalSuppliers.OrderBy(m => m.InsertDate);
+                    break;
+                case "date_desc":
+                    juridicalSuppliers = juridicalSuppliers.OrderByDescending(m => m.InsertDate);
+                    break;
+                default:
+                    juridicalSuppliers = juridicalSuppliers.OrderBy(m => m.CompanyName);
+                    break;
+            }
+            return await juridicalSuppliers.AsNoTracking().ToListAsync();
         }
 
         public async Task<SupplierPhysical> FindPhysicalById(Guid id)
@@ -165,6 +216,60 @@ namespace Infrastructure.Repositories
         public async Task<int> SaveChanges()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<PaginationViewModel<SupplierPhysical>> PaginationPhysical(int pageSize, int pageIndex, string query)
+        {
+            IPagedList<SupplierPhysical> list;
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                list = await _context.PhysicalSuppliers.Where(x => x.Email.EmailAddress.Contains(query)).AsNoTracking().ToPagedListAsync(pageIndex, pageSize);
+            }
+            else
+            {
+                list = await _context.PhysicalSuppliers.Include(x => x.Phones)
+                                .Include(x => x.Email)
+                                .Include(x => x.Address)
+                                .AsNoTracking()
+                                .ToPagedListAsync(pageIndex, pageSize);
+            }
+
+            return new PaginationViewModel<SupplierPhysical>()
+            {
+                List = list.ToList(),
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Query = query,
+                TotalResult = list.TotalItemCount
+            };
+        }
+
+        public async Task<PaginationViewModel<SupplierJuridical>> PaginationJuridical(int pageSize, int pageIndex, string query)
+        {
+            IPagedList<SupplierJuridical> list;
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                list = await _context.JuridicalSuppliers.Where(x => x.Email.EmailAddress.Contains(query)).AsNoTracking().ToPagedListAsync(pageIndex, pageSize);
+            }
+            else
+            {
+                list = await _context.JuridicalSuppliers.Include(x => x.Phones)
+                                .Include(x => x.Email)
+                                .Include(x => x.Address)
+                                .AsNoTracking()
+                                .ToPagedListAsync(pageIndex, pageSize);
+            }
+
+            return new PaginationViewModel<SupplierJuridical>()
+            {
+                List = list.ToList(),
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Query = query,
+                TotalResult = list.TotalItemCount
+            };
         }
     }
 }

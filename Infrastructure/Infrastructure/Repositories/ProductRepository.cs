@@ -99,7 +99,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Category>> ListCategories()
         {
-            return await _context.Categories.AsNoTracking().ToListAsync();
+            return await _context.Categories.Include(x => x.Products).AsNoTracking().ToListAsync();
         }
 
         public async Task<IEnumerable<SupplierPhysical>> ListPhysicalSuppliers()

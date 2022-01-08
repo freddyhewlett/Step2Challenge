@@ -19,8 +19,7 @@ namespace WebUI.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("WebUIContextConnection")));
 
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<WebUIContext>();
+                services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<WebUIContext>();
             });
         }
     }

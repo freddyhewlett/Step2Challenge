@@ -17,7 +17,7 @@ namespace Domain.Models.Suppliers
         public Guid AddressId { get; protected set; }
         public Email Email { get; private set; }
         public Guid EmailId { get; protected set; }
-        public IEnumerable<Product> Products { get; private set; }
+        public ICollection<Product> Products { get; private set; }
         public ICollection<Phone> Phones { get; private set; } = new List<Phone>();
 
         public void SetUpdatePhone(Phone phone) 
