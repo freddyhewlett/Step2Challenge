@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace WebUI.Configuration
 {
+    [Authorize]
     public class MainController : Controller
     {
         protected readonly IMapper _mapper;

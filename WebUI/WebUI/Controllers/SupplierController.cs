@@ -34,7 +34,6 @@ namespace WebUI.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        // GET: SupplierController
         public async Task<IActionResult> IndexPhysical(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
@@ -112,7 +111,6 @@ namespace WebUI.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> DetailsPhysical(Guid id)
         {
             var supplier = await _supplierService.FindPhysicalById(id);
@@ -140,9 +138,8 @@ namespace WebUI.Controllers
             return View(newSupplier);
         }
 
-        // POST: SupplierController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> CreatePhysical(SupplierPhysicalViewModel supplier)
         {
             if (!ModelState.IsValid) return View(supplier);
@@ -176,9 +173,8 @@ namespace WebUI.Controllers
             return View(newSupplier);
         }
 
-        // POST: SupplierController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> CreateJuridical(SupplierJuridicalViewModel supplier)
         {
             if (!ModelState.IsValid) return View(supplier);
@@ -223,9 +219,8 @@ namespace WebUI.Controllers
             return View(viewModel);
         }
 
-        // POST: SupplierController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> EditPhysical(SupplierPhysicalViewModel supplier)
         {
             if (!ModelState.IsValid) return View(supplier);
@@ -269,7 +264,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> EditJuridical(SupplierJuridicalViewModel supplier)
         {
             if (!ModelState.IsValid) return View(supplier);
@@ -307,7 +302,7 @@ namespace WebUI.Controllers
 
         // POST: SupplierController/Delete/5
         [HttpPost, ActionName("DeletePhysical")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeletePhysicalConfirmed(Guid id)
         {
             await _supplierService.RemovePhysical(id);
@@ -331,7 +326,7 @@ namespace WebUI.Controllers
 
         // POST: SupplierController/Delete/5
         [HttpPost, ActionName("DeleteJuridical")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteJuridicalConfirmed(Guid id)
         {
             await _supplierService.RemoveJuridical(id);
@@ -342,6 +337,7 @@ namespace WebUI.Controllers
             return RedirectToAction(nameof(IndexJuridical));
         }
 
+        [AllowAnonymous]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

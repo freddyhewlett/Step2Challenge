@@ -26,7 +26,7 @@ namespace WebUI.Controllers
         {
             _categoryService = categoryService;
         }
-        // GET: CategoryController
+        
         public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
@@ -66,7 +66,8 @@ namespace WebUI.Controllers
             return View(await PaginatedList<CategoryViewModel>.CreateAsync(result, pageNumber ?? 1, pageSize));
         }
 
-        // GET: CategoryController/Details/5
+        [HttpGet]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Details(Guid id)
         {
             var category = await _categoryService.FindById(id);
@@ -85,9 +86,8 @@ namespace WebUI.Controllers
             return View(result);
         }
 
-        // POST: CategoryController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create(CategoryViewModel newCategory)
         {
             if (!ModelState.IsValid) return View(newCategory);
@@ -102,7 +102,6 @@ namespace WebUI.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: CategoryController/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -118,7 +117,7 @@ namespace WebUI.Controllers
 
         // POST: CategoryController/Edit/5
         [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> EditConfirmed(CategoryViewModel categoryViewModel)
         {
             if (!ModelState.IsValid) return View(categoryViewModel);
@@ -147,7 +146,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             await _categoryService.Remove(id);

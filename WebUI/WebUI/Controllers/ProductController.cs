@@ -32,7 +32,6 @@ namespace WebUI.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        // GET: ProductController
         public async Task<IActionResult> Index(string sortOrder, Guid? SelectedCategory, string searchString, string currentFilter, int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
@@ -77,7 +76,7 @@ namespace WebUI.Controllers
             return View(await PaginatedList<ProductViewModel>.CreateAsync(result, pageNumber ?? 1, pageSize));
         }
 
-        // GET: ProductController/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
             var product = await _productService.FindById(id);
@@ -98,7 +97,7 @@ namespace WebUI.Controllers
 
         // POST: ProductController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create(ProductViewModel newProduct)
         {
             if (!ModelState.IsValid) return View(await MappingListCategories(newProduct));
@@ -145,9 +144,8 @@ namespace WebUI.Controllers
             return View(productViewModel);
         }
 
-        // POST: ProductController/Edit/5
         [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> EditConfirmed(ProductViewModel productViewModel)
         {
             if (!ModelState.IsValid) return View(await MappingListCategories(productViewModel));
@@ -215,9 +213,8 @@ namespace WebUI.Controllers
             return View(_mapper.Map<ProductViewModel>(product));
         }
 
-        // POST: ProductController/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var product = await _productService.FindById(id);

@@ -106,10 +106,10 @@ namespace WebUI.Controllers
                     {
                         return RedirectToAction("index", "home");
                     }
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                }                                
             }
+
+            ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
 
             return View(model);
         }
