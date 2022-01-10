@@ -35,8 +35,9 @@ namespace WebUI.Controllers
             return View();
         }
 
-        [AutoValidateAntiforgeryToken]
+        [AllowAnonymous]
         [HttpPost]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)

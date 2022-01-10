@@ -22,32 +22,38 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        //Procura categoria atraves de uma expressão lambda
         public async Task<Category> Find(Expression<Func<Category, bool>> predicate)
         {
             return await _context.Categories.Include(x => x.Products).Where(predicate).FirstOrDefaultAsync();
         }
 
+        //Procura todas as categorias atraves de uma expressão lambda
         public async Task<IEnumerable<Product>> FindAll(Expression<Func<Product, bool>> predicate)
         {
             return await _context.Products.Include(x => x.Category).Where(predicate).ToListAsync();
         }
 
+        //Lista os produtos para busca de produtos por categoria
         public async Task<IEnumerable<Product>> ListCategories()
         {
-            return await _context.Products.AsNoTracking().ToListAsync();
+            return await _context.Products.Include(x => x.Category).AsNoTracking().ToListAsync();
         }
 
+        //Recebe uma categoria para inserir no contexto de banco de dados
         public async Task Insert(Category category)
         {
             await _context.AddAsync(category);
         }
 
+        //Remove categoria cadastrada
         public async Task Remove(Category category)
         {
             _context.Remove(category);
             await Task.CompletedTask;
         }
 
+        //Lista todas as categorias cadastradas
         public async Task<IEnumerable<Category>> ToList()
         {
             return await _context.Categories.ToListAsync();

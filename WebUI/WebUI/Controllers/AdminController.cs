@@ -10,7 +10,6 @@ using WebUI.Models.Identity;
 
 namespace WebUI.Controllers
 {
-    [AllowAnonymous]
     public class AdminController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
